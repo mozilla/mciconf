@@ -1,0 +1,4 @@
+{
+  "dashboards": ["mozmill-release"],
+  "dashboards_url": "http://mozauto.iriscouch.com/"
+}
