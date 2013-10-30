@@ -63,7 +63,7 @@
           <select class="input-medium"
                   ng-model="platform"
                   ng-options="p.name for p in platforms"
-                  ng-change="updatePlatformVersion(platform);">
+                  ng-change="platform_version = platform.versions[0]">
           </select>
           <select class="input-medium"
                   ng-model="platform_version"
@@ -87,7 +87,14 @@
 script={{testrun.script}}
 report={{dashboards_url + dashboard + '/'}}
 <div class="ng-hide" ng-show="isUpdate();">target-build-id={{target_build_id}}
-channel={{update_channel}}</div></pre>
+channel={{update_channel}}</div>
+<div ng-repeat="build in builds">
+[{{platform.labels}} {{platform.platform_version.labels}}]
+platform={{platform.platform}}
+<!--<div class="ng-hide" ng-show="{{platform.firefox_version && platform.locale}}">-->{{platform.firefox_version}}={{platform.locale}}
+</div>
+      </pre>
+
     </div>
   </body>
 </html>
