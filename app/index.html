@@ -61,22 +61,22 @@
       <ul>
         <li ng-repeat="build in builds">
           <select class="input-medium"
-                  ng-model="platform"
+                  ng-model="builds[$index].platform"
                   ng-options="p.name for p in platforms"
-                  ng-change="updatePlatformVersion(platform);">
+                  ng-change="updatePlatformVersion($index);">
           </select>
           <select class="input-medium"
-                  ng-model="platform_version"
-                  ng-options="v.name for v in platform.versions">
+                  ng-model="builds[$index].platform_version"
+                  ng-options="v.name for v in builds[$index].platform.versions">
           </select>
           <input type="text"
                  class="input-medium"
                  placeholder="Firefox Version"
-                 ng-model="firefox_version">
+                 ng-model="builds[$index].firefox_version">
           <input type="text"
                  class="input-medium"
                  placeholder="Locales"
-                 ng-model="locale">
+                 ng-model="builds[$index].locale">
           </select>
           <a class="" ng-click="removeBuild($index);"><i class="icon-minus-sign"></i></a>
         </li>
@@ -87,7 +87,14 @@
 script={{testrun.script}}
 report={{dashboards_url + dashboard + '/'}}
 <div class="ng-hide" ng-show="isUpdate();">target-build-id={{target_build_id}}
-channel={{update_channel}}</div></pre>
+channel={{update_channel}}</div>
+<div ng-repeat="build in builds">
+[{{builds[$index].platform.labels}} {{builds[$index].platform_version.labels}}]
+platform={{builds[$index].platform.platform}}
+{{builds[$index].firefox_version}}={{builds[$index].locale}}
+</div>
+      </pre>
+
     </div>
   </body>
 </html>
