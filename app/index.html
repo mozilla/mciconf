@@ -58,30 +58,38 @@
           </div>
         </div>
         <legend>Builds</legend>
-      <ul>
+      <ul id="buildsList">
         <li ng-repeat="build in builds">
-          <select class="input-medium"
+          <select class="input-medium buildChild"
                   ng-model="builds[$index].platform"
                   ng-options="p.name for p in platforms"
                   ng-change="updatePlatformVersion($index);">
           </select>
-          <select class="input-medium"
+          <select class="input-medium buildChild"
                   ng-model="builds[$index].platform_version"
-                  ng-options="v.name for v in builds[$index].platform.versions">
+                  ng-options="v.name for v in builds[$index].platform.versions"
+                  ng-change="checkDuplicates(true)">
           </select>
-          <input type="text"
-                 class="input-medium"
-                 placeholder="Firefox Version"
-                 ng-model="builds[$index].firefox_version">
-          <input type="text"
-                 class="input-medium"
-                 placeholder="Locales"
-                 ng-model="builds[$index].locale">
-          </select>
-          <a class="" ng-click="removeBuild($index);"><i class="icon-minus-sign"></i></a>
+          <div class="buildsVersions buildChild">
+            <div class="buildVersion" ng-repeat="version in builds[$index].firefox_versions">
+              <input type="text"
+                     class="input-medium"
+                     placeholder="Firefox Version"
+                     ng-model="version.name">
+              <input type="text"
+                     class="input-medium"
+                     placeholder="Locales"
+                     ng-model="version.locale"
+                     ng-change="checkLocales($index, $parent.$index)">
+              </select>
+              <a class="danger" ng-click="removeVersion($index, $parent.$index)"><i class="icon-minus-sign"></i></a>
+            </div>
+            <button class="btn" ng-click="addVersion($index);"><i class="icon-plus"></i> Add a version</button>
+          </div>
+          <button class="btn btn-danger" class="buildChild" ng-click="removeBuild($index);">Remove build</button>
         </li>
       </ul>
-      <button class="btn" ng-click="addBuild();"><i class="icon-plus"></i> Add</button>
+      <button class="btn btn-success" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
       </form>
       <pre>[testrun]
 script={{testrun.script}}
@@ -90,8 +98,8 @@ report={{dashboards_url + dashboard + '/'}}
 channel={{update_channel}}</div>
 <div ng-repeat="build in builds">
 [{{builds[$index].platform.labels}} {{builds[$index].platform_version.labels}}]
-platform={{builds[$index].platform.platform}}
-{{builds[$index].firefox_version}}={{builds[$index].locale}}
+platform={{builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefox_versions">
+{{version.name}}={{version.locale}}</span>
 </div>
       </pre>
 

@@ -11,7 +11,7 @@
     {"name": "13.04 (32bit)", "labels": "13.04 32bit"},
     {"name": "13.04 (64bit)", "labels": "13.04 64bit", "platform": "linux64"}
   ]},
-  {"name": "Windows", "labels": "windows", "platform": "mac", "versions":[
+  {"name": "Windows", "labels": "windows", "platform": "win32", "versions":[
     {"name": "XP", "labels": "xp 32bit"},
     {"name": "Vista", "labels": "vista 32bit"},
     {"name": "7", "labels": "7 32bit"},
