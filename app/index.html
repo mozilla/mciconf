@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app>
+<html ng-app="mciconf">
   <head>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -15,94 +15,9 @@
         </div>
       </div>
     </div>
-
-    <div class="container" ng-controller="Ctrl">
-      <form class="form-horizontal">
-        <legend>Testrun</legend>
-        <div class="control-group">
-          <label class="control-label" for="inputType">Type</label>
-          <div class="controls">
-            <select id="inputType"
-                    class="input-medium"
-                    ng-model="testrun"
-                    ng-options="t.name for t in testruns">
-            </select>
-          </div>
-        </div>
-          <div class="control-group ng-hide" ng-show="isUpdate();">
-            <label class="control-label" for="inputTargetBuildID">Target Build ID</label>
-            <div class="controls">
-              <input id="inputTargetBuildID"
-                     type="text"
-                     class="input-medium"
-                     ng-model="target_build_id">
-            </div>
-          </div>
-          <div class="control-group ng-hide" ng-show="isUpdate();">
-            <label class="control-label" for="inputUpdateChannel">Update Channel</label>
-            <div class="controls">
-              <input id="inputUpdateChannel"
-                     type="text"
-                     class="input-medium"
-                     ng-model="update_channel">
-            </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="inputDashboard">Dashboard</label>
-          <div class="controls">
-            <select id="inputDashboard"
-                    class="input-medium"
-                    ng-model="dashboard"
-                    ng-options="d for d in dashboards">
-            </select>
-          </div>
-        </div>
-        <legend>Builds</legend>
-      <ul id="buildsList">
-        <li ng-repeat="build in builds">
-          <select class="input-medium buildChild"
-                  ng-model="builds[$index].platform"
-                  ng-options="p.name for p in platforms"
-                  ng-change="updatePlatformVersion($index);">
-          </select>
-          <select class="input-medium buildChild"
-                  ng-model="builds[$index].platform_version"
-                  ng-options="v.name for v in builds[$index].platform.versions"
-                  ng-change="checkDuplicates(true)">
-          </select>
-          <div class="buildsVersions buildChild">
-            <div class="buildVersion" ng-repeat="version in builds[$index].firefox_versions">
-              <input type="text"
-                     class="input-medium"
-                     placeholder="Firefox Version"
-                     ng-model="version.name">
-              <input type="text"
-                     class="input-medium"
-                     placeholder="Locales"
-                     ng-model="version.locale"
-                     ng-change="checkLocales($index, $parent.$index)">
-              </select>
-              <a class="danger" ng-click="removeVersion($index, $parent.$index)"><i class="icon-minus-sign"></i></a>
-            </div>
-            <button class="btn" ng-click="addVersion($index);"><i class="icon-plus"></i> Add a version</button>
-          </div>
-          <button class="btn btn-danger" class="buildChild" ng-click="removeBuild($index);">Remove build</button>
-        </li>
-      </ul>
-      <button class="btn btn-success" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
-      </form>
-      <pre>[testrun]
-script={{testrun.script}}
-report={{dashboards_url + dashboard + '/'}}
-<div class="ng-hide" ng-show="isUpdate();">target-build-id={{target_build_id}}
-channel={{update_channel}}</div>
-<div ng-repeat="build in builds">
-[{{builds[$index].platform.labels}} {{builds[$index].platform_version.labels}}]
-platform={{builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefox_versions">
-{{version.name}}={{version.locale}}</span>
-</div>
-      </pre>
-
+    <div class="container" ng-controller="mainController">
+      <form-page></form-page>
+      <document></document>
     </div>
   </body>
 </html>

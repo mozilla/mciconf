@@ -1,0 +1,9 @@
+<pre>[testrun]
+script={{testrun.script}}
+report={{dashboards_url + dashboard + '/'}}
+<div class="ng-hide" ng-show="isUpdate();">target-build-id={{target_build_id}}
+channel={{update_channel}}</div><div ng-repeat="build in builds">
+[{{builds[$index].platform.labels}} {{builds[$index].platform_version.labels}}]
+platform={{builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefox_versions">
+{{version.name}}={{version.locale}}</span></div>
+</pre>

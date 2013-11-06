@@ -1,0 +1,50 @@
+<form class="form-horizontal">
+  <legend>Testrun</legend>
+  <div class="control-group">
+    <label class="control-label" for="inputType">Type</label>
+    <div class="controls">
+      <select id="inputType"
+              class="input-medium"
+              ng-model="testrun"
+              ng-options="t.name for t in testruns">
+      </select>
+    </div>
+  </div>
+    <div class="control-group ng-hide" ng-show="isUpdate();">
+      <label class="control-label" for="inputTargetBuildID">Target Build ID</label>
+      <div class="controls">
+        <input id="inputTargetBuildID"
+               type="text"
+               class="input-medium"
+               ng-model="target_build_id">
+      </div>
+    </div>
+    <div class="control-group ng-hide" ng-show="isUpdate();">
+      <label class="control-label" for="inputUpdateChannel">Update Channel</label>
+      <div class="controls">
+        <input id="inputUpdateChannel"
+               type="text"
+               class="input-medium"
+               ng-model="update_channel">
+      </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputDashboard">Dashboard</label>
+    <div class="controls">
+      <select id="inputDashboard"
+              class="input-medium"
+              ng-model="dashboard"
+              ng-options="d for d in dashboards">
+      </select>
+    </div>
+  </div>
+  <legend>Builds</legend>
+  <ul id="buildsList">
+    <li ng-repeat="build in builds">
+      <build ></build>
+    </li>
+  </ul>
+  <button class="btn btn-success" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
+  <button class="btn {{buttonClasses[checkAllBuilds()]}}" ng-click="checkAll()"><i class="{{iconClasses[checkAllBuilds()]}}"></i> Check All builds</button>
+  <button class="btn btn-danger" ng-click="clear()"><i class="icon-remove"></i> Clear</button>
+</form>
