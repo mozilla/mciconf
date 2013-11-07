@@ -1,6 +1,8 @@
 'use strict';
+var mciconf = angular.module('mciconf', []);
 
-function Ctrl ($scope, $http, $timeout) {
+mciconf.controller('mainController', ['$scope', '$http', '$timeout',
+                            function ($scope, $http, $timeout) {
 
   $scope.builds = [];
 
@@ -115,6 +117,25 @@ function Ctrl ($scope, $http, $timeout) {
   $scope.removeVersion = function (aVersionIndex, aBuildIndex) {
     $scope.builds[aBuildIndex].firefox_versions.splice(aVersionIndex, 1);
   }
-}
+}]);
 
+mciconf.directive('build', function () {
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/build.html'
+  }
+});
 
+mciconf.directive('document', function () {
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/document.html'
+  }
+});
+
+mciconf.directive('formPage', function () {
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/form.html'
+  }
+});
