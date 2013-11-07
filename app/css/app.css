@@ -1,1 +1,16 @@
 /* app css stylesheet */
+#buildsList li {
+  margin-bottom: 2px;
+}
+.buildsVersions {
+  display: inline-block;
+}
+.buildChild {
+  display: inline-table;
+}
+.buildVersion {
+  margin-bottom: 2px;
+}
+.buildsVersions button {
+  width: 95%;
+}
