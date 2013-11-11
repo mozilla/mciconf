@@ -44,7 +44,7 @@
       <build ></build>
     </li>
   </ul>
-  <button class="btn btn-success" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
+  <button class="btn btn-success" ng-disabled="!platformsLeft()" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
   <button class="btn {{buttonClasses[checkAllBuilds()]}}" ng-click="checkAll()"><i class="{{iconClasses[checkAllBuilds()]}}"></i> Check All builds</button>
   <button class="btn btn-danger" ng-click="clear()"><i class="icon-remove"></i> Clear</button>
 </form>

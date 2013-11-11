@@ -1,12 +1,11 @@
 <select class="input-medium buildChild"
         ng-model="builds[$index].platform"
-        ng-options="p.name for p in platforms"
+        ng-options="p.name for p in platforms | added:builds[$index].platform"
         ng-change="updatePlatformVersion($index);">
 </select>
 <select class="input-medium buildChild"
         ng-model="builds[$index].platform_version"
-        ng-options="v.name for v in builds[$index].platform.versions"
-        ng-change="checkDuplicates(true)">
+        ng-options="v.name for v in builds[$index].platform.versions |  added:builds[$index].platform_version">
 </select>
 <div class="buildsVersions buildChild">
   <form ng-submit="checkBuild($index, $parent.$index)" class="buildVersion" ng-repeat="version in builds[$index].firefox_versions">
