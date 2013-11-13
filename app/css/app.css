@@ -11,6 +11,28 @@
 .buildVersion {
   margin-bottom: 2px;
 }
-.addVersion{
+.addVersion {
   width: 95%;
+}
+.formView {
+  display: inline-table;
+  margin-right: 5px;
+  width: 45%;
+  max-width: 45%;
+  height: 150px;
+  max-height: 150px;
+}
+.alert {
+  position: relative;
+  margin-bottom: 5px;
+  min-height: 15px;
+  overflow-x: hidden;
+}
+.alert .close {
+  top: -2px;
+  right: -21px;
+  line-height: 20px;
+}
+.buildVersion select, .buildVersion input {
+  width: 100px;
 }

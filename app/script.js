@@ -24,6 +24,22 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
     $rootScope.iconClasses = ["icon-question-sign", "icon-ok", "icon-remove"];
     $rootScope.buttonClasses = ["btn-warning", "btn-success", "btn-danger"];
     $rootScope.locales = ["en-US"];
+    $rootScope.ff_versions = [];
+    $rootScope.updateChannels = ["default", "release", "esr", "beta", "aurora", "nightly"];
+    $rootScope.update_channel = "default";
+
+    $rootScope.parseAtAddress = function (aAddress, aTag, aCallbackFilter, aFinalCallback) {
+      $http.get(aAddress).then(function (res){
+        var doc = document.createElement('div');
+        doc.innerHTML = res.data.split('<table>')[1].split('</table>')[0];
+        doc.innerHTML = res.data.split('<table>')[1].split('</table>')[0];
+        var elements = doc.getElementsByTagName(aTag);
+        for (var element in elements)
+          aCallbackFilter(elements[element]);
+        if (aFinalCallback)
+          aFinalCallback();
+      });
+    }
 
     //START Retrieving data
     $http.get('data/dashboards.json').then(function (res){
@@ -31,6 +47,27 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
       $rootScope.dashboardsbuildUrl = res.data.dashboardsbuildUrl;
       $rootScope.dashboard = $scope.dashboards[0];
     });
+
+    $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/', 'a',
+      function (link) {
+        if (link.innerText && link.innerText.indexOf('-candidates') !== -1) {
+          $rootScope.ff_versions.push(link.innerText.split('-candidates/')[0]);
+        }
+      },
+      function () {
+        $rootScope.ff_versions.sort(function(a,b){
+          return parseInt(b)-parseInt(a);
+        });
+        $rootScope.builds.forEach(function (build, buildIndex) {
+          build.firefox_versions.forEach(function (version, versionIndex) {
+            if (!version.name){
+              version.name = $rootScope.ff_versions[0];
+              $rootScope.$emit('versionChanged', {versionIndex: versionIndex,
+                                                  buildIndex: buildIndex});
+            }
+          });
+        });
+      });
 
     $http.get('https://l10n.mozilla.org/shipping/api/status?tree=fx_beta').then(function (res){
       res.data.items.forEach(function (locale) {
@@ -52,11 +89,14 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
     //END Retrieving data
 
     $scope.addBuild = function () {
+      var build = {};
+      build.exists = STATE.NOT_CHECKED;
+      build.name = ($rootScope.ff_versions.length) ? $rootScope.ff_versions[0] : "";
+      build.locale = "";
+      build.buildNumber = "release";
+      build.buildNumbers = ["release"];
       var newEmptyBuild = {};
-      newEmptyBuild.firefox_versions = [{name: "",
-                                         locale: "",
-                                         exists: 0}];
-
+      newEmptyBuild.firefox_versions = [build];
       newEmptyBuild.platform = $rootScope.platforms.filter(notAdded)[0];
       newEmptyBuild.platform_version =  newEmptyBuild.platform.versions.filter(notAdded)[0];
       newEmptyBuild.platform_version.added = true;
@@ -113,73 +153,74 @@ mciconf.directive('build', function () {
     restrict: 'AE',
     templateUrl: 'templates/build.html',
     controller: function ($scope, $rootScope, $timeout) {
-
       $scope.addVersion = function (aIndex) {
-        $rootScope.builds[aIndex].firefox_versions.push({exists: STATE.NOT_CHECKED});
+        var build = {};
+        build.exists = STATE.NOT_CHECKED;
+        build.name = ($rootScope.ff_versions.length) ? $rootScope.ff_versions[0] : "";
+        $rootScope.builds[aIndex].firefox_versions.push(build);
+        $scope.versionChanged($rootScope.builds[aIndex].firefox_versions.length - 1, aIndex);
       };
 
       $scope.checkBuild = function (aVersionIndex, aBuildIndex) {
         // If there is no version and locales then we have to invalidate the build and return early
-        if (!$rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name &&
-            !$rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].locale) {
+        if ( !$rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].locale) {
           $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.NOT_FOUND;
+          $scope.$emit('notify', {type: 'error',
+                                  message: 'A localization must be given'});
           return;
         }
 
-        var candidate = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name.indexOf("#") !== -1;
+        var candidate = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumber !== 'release';
 
-        var build = (candidate) ? $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name.split("#")[1] : undefined;
         var foundBuilds = 0;
         var locales = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].locale.split(" ");
         var url = "http://ftp.mozilla.org/pub/mozilla.org/firefox/";
         var version = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name.split("#")[0];
+        var file = "";
 
         url += (candidate) ? "candidates/" : "releases/";
-        url += version + ((candidate) ? "-candidates/build" + build + "/" : "/");
+        url += version + ((candidate) ? "-candidates/" + $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumber + "/" : "/");
         url += PLATFORM_FRAGMENTS[$rootScope.builds[aBuildIndex].platform_version.platform ||
                                   $rootScope.builds[aBuildIndex].platform.platform] + "/";
-        locales.forEach(function (locale) {
-          var buildUrl = url + locale + "/";
-          switch ($rootScope.builds[aBuildIndex].platform.platform) {
-            case "linux":
-              buildUrl += "firefox-";
-              buildUrl += version;
-              buildUrl += ".tar.bz2";
-              break;
-            case "mac":
-              buildUrl += "Firefox%20";
-              buildUrl += version;
-              buildUrl += ".dmg";
-              break;
-            case "win32":
-              buildUrl += "Firefox%20Setup%20";
-              buildUrl += version;
-              buildUrl += ".exe";
-              break;
-          }
 
-          var x = new XMLHttpRequest();
-          x.open("GET", buildUrl);
-          x.onreadystatechange = function () {
-            if (x.readyState === 2 && x.status === 200) {
+        switch ($rootScope.builds[aBuildIndex].platform.platform) {
+          case "linux":
+            file += "firefox-";
+            file += version;
+            file += ".tar.bz2";
+            break;
+          case "mac":
+            file += "Firefox%20";
+            file += version;
+            file += ".dmg";
+            break;
+          case "win32":
+            file += "Firefox%20Setup%20";
+            file += version;
+            file += ".exe";
+            break;
+        }
+
+        locales.forEach(function (locale) {
+          var localeFound = false;
+          $rootScope.parseAtAddress(url + locale + "/", "a", function (link) {
+            if (link.innerHTML && link.innerHTML.indexOf(file)) {
+              localeFound = true;
               foundBuilds += 1;
               if (foundBuilds === locales.length) {
                 $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.FOUND;
-
-                // Because we change this outside angular world we have to call the apply function to check models
-                if (!$rootScope.$$phase)
-                  $rootScope.$apply();
+                $scope.$emit('notify', {type: 'success',
+                                        message: 'Builds "' + locales.join('"', "'") + '" exists.'});
               }
-              x.abort();
-            } else if ((x.readyState == 2 && x.status !== 200) || x.status === 0) {
-              $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.NOT_FOUND;
-
-              // Because we change this outside angular world we have to call the apply function to check models
-              if (!$rootScope.$$phase)
-                $rootScope.$apply();
             }
-          };
-          x.send();
+          },
+          function () {
+            if (!localeFound) {
+              $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.NOT_FOUND;
+              $scope.$emit('notify', {type: 'error',
+                                      message: 'No Build was found at ' + file});
+            }
+          });
         });
       };
 
@@ -190,15 +231,18 @@ mciconf.directive('build', function () {
         $scope.checker = $timeout(function() {
           for (var i = 0; i < locales.length; i += 1) {
             if ($rootScope.locales.indexOf(locales[i]) === -1) {
+              $scope.$emit('notify', {type: 'error',
+                                      message: 'Locales "' + locales.join('", "') + '" were not found!'});
               locales.splice(i, 1);
               i -= 1; // If we remove one item the next one will be on the same index
             }
           }
           $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].locale = locales.join(" ");
+          $scope.checkBuild(aVersionIndex, aBuildIndex);
         }, 3000, true);
       };
 
-      $scope.checkVersion = function (aVersionIndex, aBuildIndex) {
+      $scope.unCheck = function (aVersionIndex, aBuildIndex) {
         $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.NOT_CHECKED;
       };
 
@@ -216,6 +260,22 @@ mciconf.directive('build', function () {
         $rootScope.builds[aBuildIndex].firefox_versions.splice(aVersionIndex, 1);
       };
 
+      $scope.versionChanged = function (aVersionIndex, aBuildIndex) {
+        $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumbers = ['release'];
+        var version = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name + "-candidates/";
+        $rootScope.parseAtAddress("http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/" + version, 'a', function (link) {
+          if (link.innerHTML && link.innerHTML.indexOf('build') !== -1) {
+            $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumbers.push(link.innerHTML.split('/')[0]);
+          }
+        },
+        function () {
+          $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumber = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].buildNumbers[0];
+        });
+        $scope.unCheck(aVersionIndex, aBuildIndex);
+      }
+      $rootScope.$on('versionChanged', function (event, message) {
+        $scope.versionChanged(message.versionIndex, message.buildIndex);
+      });
       $scope.$on('checkAll', function () {
         var length = $scope.this.build.firefox_versions.length;
         for (var i = 0; i < length; i += 1) {
@@ -258,6 +318,27 @@ mciconf.directive('formPage', function () {
           return false;
         return $rootScope.platforms.filter(notAdded).length
       }
+    }
+  }
+});
+
+mciconf.directive('notification', function () {
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/logger.html',
+    controller: function ($scope, $rootScope) {
+      $scope.alerts = [];
+      $scope.history = [];
+      $scope.closeAlert = function (aIndex) {
+        $scope.alerts.splice(aIndex, 1);
+      }
+      $rootScope.$on('notify', function (aEvent, aMessage) {
+        $scope.alerts.reverse();
+        $scope.alerts.push({type: aMessage.type, message: aMessage.message});
+        $scope.alerts.reverse();
+        if ($scope.alerts.length > 3)
+          $scope.history.push($scope.alerts.pop());
+      });
     }
   }
 });

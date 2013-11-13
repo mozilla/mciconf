@@ -5,5 +5,5 @@ report={{dashboards_url + dashboard + '/'}}
 channel={{update_channel}}</div><div ng-repeat="build in builds">
 [{{builds[$index].platform.labels}} {{builds[$index].platform_version.labels}}]
 platform={{builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefox_versions">
-{{version.name}}={{version.locale}}</span></div>
+{{version.name}}{{(version.buildNumber.indexOf('build') !== -1) ? '#' + version.buildNumber.split('build')[1] : ''}}={{version.locale}}</span></div>
 </pre>
