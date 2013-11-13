@@ -23,6 +23,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
     $rootScope.builds = [];
     $rootScope.iconClasses = ["icon-question-sign", "icon-ok", "icon-remove"];
     $rootScope.buttonClasses = ["btn-warning", "btn-success", "btn-danger"];
+    $rootScope.locales = ["en-US"];
 
     //START Retrieving data
     $http.get('data/dashboards.json').then(function (res){
@@ -31,8 +32,11 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
       $rootScope.dashboard = $scope.dashboards[0];
     });
 
-    $http.get('data/locales.json').then(function (res){
-      $rootScope.locales = res.data;
+    $http.get('https://l10n.mozilla.org/shipping/api/status?tree=fx_beta').then(function (res){
+      res.data.items.forEach(function (locale) {
+        if (locale.type === "Build")
+          $rootScope.locales.push(locale.locale);
+      });
     });
 
     $http.get('data/platforms.json').then(function (res){
@@ -72,7 +76,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http',
         return newEmptyBuild.platform
       }, function (newVersion, oldVersion) {
         oldVersion.added = false;
-        if (!newVersion.versions.filter(fnotAdded).length) {
+        if (!newVersion.versions.filter(notAdded).length) {
           newVersion.added = true;
         }
       });
@@ -127,7 +131,7 @@ mciconf.directive('build', function () {
         var build = (candidate) ? $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name.split("#")[1] : undefined;
         var foundBuilds = 0;
         var locales = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].locale.split(" ");
-        var url = "/ftp/";
+        var url = "http://ftp.mozilla.org/pub/mozilla.org/firefox/";
         var version = $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].name.split("#")[0];
 
         url += (candidate) ? "candidates/" : "releases/";
@@ -167,7 +171,7 @@ mciconf.directive('build', function () {
                   $rootScope.$apply();
               }
               x.abort();
-            } else if (x.readyState == 2 && x.status !== 200) {
+            } else if ((x.readyState == 2 && x.status !== 200) || x.status === 0) {
               $rootScope.builds[aBuildIndex].firefox_versions[aVersionIndex].exists = STATE.NOT_FOUND;
 
               // Because we change this outside angular world we have to call the apply function to check models

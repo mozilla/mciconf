@@ -9,6 +9,3 @@ Mozmill CI Configuration Generator is an application that intends to generate va
 * Should check if the given builds exists
 * Should be able to load and check external files
 * Should be able to save jobs and load them back (localStorage)
-
-#Setup
-Because of same-origin policy we cannot make AJAX calls trough ftp protocol, so we will reverse proxy running the setup.sh script

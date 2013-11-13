@@ -20,7 +20,7 @@
            ng-model="version.locale"
            ng-change="checkLocales($index, $parent.$index)">
     </select>
-    <button class="btn {{buttonClasses[version.buildsFound]}}" ng-click="checkBuild($index, $parent.$index)"><i class="{{iconClasses[version.buildsFound]}}"></i> Check build</button>
+    <button class="btn {{buttonClasses[version.exists]}}" ng-click="checkBuild($index, $parent.$index)"><i class="{{iconClasses[version.exists]}}"></i> Check build</button>
     <a class="danger {{(builds[$parent.$index].firefox_versions.length === 1) ? 'ng-hide':''}}" ng-click="removeVersion($index, $parent.$index)"><i class="icon-minus-sign"></i></a>
   </form>
   <button class="btn" ng-click="addVersion($index);"><i class="icon-plus"></i> Add a version </button>
