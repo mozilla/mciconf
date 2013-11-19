@@ -33,6 +33,13 @@
   right: -21px;
   line-height: 20px;
 }
-.buildVersion select, .buildVersion input {
+.buildVersion select, .buildVersion input{
   width: 100px;
+}
+h5 {
+  min-width: 100px;
+}
+form-page .btn-danger {
+  float: right;
+  width: 131px;
 }

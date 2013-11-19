@@ -18,8 +18,8 @@
     <select type="text"
            class="input-medium"
            ng-options="build for build in builds[ $parent.$index].firefox_versions[$index].buildNumbers"
-           ng-model="builds[ $parent.$index].firefox_versions[$index].buildNumber"
-           ng-change="unCheck($index, $parent.$index)">
+           ng-model="builds[$parent.$index].firefox_versions[$index].buildNumber"
+           ng-change="buildNumberChanged($index, $parent.$index)">
     </select>
     <input type="text"
            class="input-medium"
