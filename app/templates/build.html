@@ -4,21 +4,23 @@
         ng-change="updatePlatformVersion($index);">
 </select>
 <select class="input-medium buildChild"
-        ng-model="builds[$index].platform_version"
-        ng-options="v.name for v in builds[$index].platform.versions |  added:builds[$index].platform_version">
+        ng-model="builds[$index].platformVersion"
+        ng-options="v.name for v in builds[$index].platform.versions |  added:builds[$index].platformVersion">
 </select>
 <div class="buildsVersions buildChild">
-  <form ng-submit="checkBuild($index, $parent.$index)" class="buildVersion" ng-repeat="version in builds[$index].firefox_versions">
+  <form ng-submit="checkBuild($index, $parent.$index)"
+        class="buildVersion"
+        ng-repeat="version in builds[$index].firefoxVersions">
     <select type="text"
            class="input-medium"
-           ng-options="version for version in ff_versions"
+           ng-options="version for version in firefoxVersions"
            ng-model="version.name"
            ng-change="versionChanged($index, $parent.$index)">
     </select>
     <select type="text"
            class="input-medium"
-           ng-options="build for build in builds[ $parent.$index].firefox_versions[$index].buildNumbers"
-           ng-model="builds[$parent.$index].firefox_versions[$index].buildNumber"
+           ng-options="build for build in builds[ $parent.$index].firefoxVersions[$index].buildNumbers"
+           ng-model="builds[$parent.$index].firefoxVersions[$index].buildNumber"
            ng-change="buildNumberChanged($index, $parent.$index)">
     </select>
     <input type="text"
@@ -27,20 +29,26 @@
            ng-model="version.locale"
            ng-change="checkLocales($index, $parent.$index)">
     </input>
-    <button class="btn {{buttonClasses[version.exists]}}" type='button' ng-click="checkBuild($index, $parent.$index)">
+    <button class="btn {{buttonClasses[version.exists]}}"
+            type='button'
+            ng-click="checkBuild($index, $parent.$index)">
       <i class="{{iconClasses[version.exists]}}"></i>
       Check build
     </button>
-    <a class="danger {{(builds[$parent.$index].firefox_versions.length === 1) ? 'ng-hide':''}}" ng-click="removeVersion($index, $parent.$index)">
+    <a class="danger {{(builds[$parent.$index].firefoxVersions.length === 1) ? 'ng-hide':''}}"
+       ng-click="removeVersion($index, $parent.$index)">
       <i class="icon-minus-sign"></i>
     </a>
   </form>
-  <button class="btn" ng-click="addVersion($index);">
+  <button class="btn"
+          ng-click="addVersion($index);">
     <i class="icon-plus"></i>
     Add a version
   </button>
 </div>
-<button class="btn btn-danger" class="buildChild" ng-click="removeBuild($index);">
+<button class="btn btn-danger"
+        class="buildChild"
+        ng-click="removeBuild($index);">
   <i class="icon-remove"></i>
   Remove build
 </button>

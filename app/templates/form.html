@@ -11,22 +11,25 @@
         </select>
       </div>
     </div>
-      <div class="control-group ng-hide" ng-show="isUpdate();">
+      <div class="control-group ng-hide"
+           ng-show="isUpdate();">
         <label class="control-label" for="inputTargetBuildID">Target Build ID</label>
         <div class="controls">
           <input id="inputTargetBuildID"
-                 type="number"
+                 type="text"
+                 ng-required="{{isUpdate()}}"
                  class="input-medium"
-                 ng-model="target_build_id">
+                 ng-model="$parent.target_build_id">
         </div>
       </div>
-      <div class="control-group ng-hide" ng-show="isUpdate();">
+      <div class="control-group ng-hide"
+           ng-show="isUpdate();">
         <label class="control-label" for="inputUpdateChannel">Update Channel</label>
         <div class="controls">
           <select id="inputUpdateChannel"
                  type="text"
                  class="input-medium"
-                 ng-model="update_channel"
+                 ng-model="updateChannel"
                  ng-options="chanel for chanel in updateChannels">
           </select>
         </div>
@@ -54,12 +57,16 @@
       <build ></build>
     </li>
   </ul>
-  <button class="btn btn-success" ng-disabled="!platformsLeft()" ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
-  <button class="btn {{buttonClasses[checkAllBuilds()]}}" ng-click="checkAll()">
+  <button class="btn btn-success"
+          ng-disabled="!platformsLeft()"
+          ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
+  <button class="btn {{buttonClasses[checkAllBuilds()]}}"
+          ng-click="checkAll()">
     <i class="{{iconClasses[checkAllBuilds()]}}"></i>
     Check All builds
   </button>
-  <button class="btn btn-danger" ng-click="clear()">
+  <button class="btn btn-danger"
+          ng-click="clear()">
     <i class="icon-remove"></i> Clear
   </button>
 </form>

@@ -43,3 +43,6 @@ form-page .btn-danger {
   float: right;
   width: 131px;
 }
+.formView input {
+  width: 136px;
+}
