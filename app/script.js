@@ -70,8 +70,9 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
   });
   $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a',
     function (link) {
-      if (link.innerText && link.innerText.indexOf('-candidates') !== -1) {
-        $rootScope.firefoxVersions.push(link.innerText.split('-candidates/')[0]);
+      console.log(link);
+      if (link.innerHTML && link.innerHTML.indexOf('-candidates') !== -1) {
+        $rootScope.firefoxVersions.push(link.innerHTML.split('-candidates/')[0]);
       }
     },
     function () {
@@ -81,8 +82,8 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
 
       $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a',
         function (link) {
-          if (link.innerText){
-            var v = link.innerText.split('/')[0];
+          if (link.innerHTML){
+            var v = link.innerHTML.split('/')[0];
             if($rootScope.firefoxVersions.indexOf(v) !== -1) {
               $rootScope.firefoxVersionsTypes[$rootScope.firefoxVersions.indexOf(v)] = 'release';
             }
@@ -275,10 +276,10 @@ mciconf.directive('build', function () {
         // Parsing the ftp directory of the current build to retrieve
         // the current build locals
         $rootScope.parseAtAddress(url, "a", function (link) {
-          if (link.href && link.href.indexOf(link.innerText) !== -1) {
+          if (link.href && link.href.indexOf(link.innerHTML) !== -1) {
             $rootScope.builds[aBuildIndex].
                        firefoxVersions[aVersionIndex].
-                       availableLocales.push(link.innerText.split('/')[0]);
+                       availableLocales.push(link.innerHTML.split('/')[0]);
           }
         });
       }
