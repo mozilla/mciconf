@@ -13,14 +13,48 @@
     </div>
       <div class="control-group ng-hide"
            ng-show="isUpdate();">
-        <label class="control-label" for="inputTargetBuildID">Target Build ID</label>
+        <div class="btn-group controls">
+          <button type="button" class="btn btn-primary" ng-model="targetType" btn-radio="'BuildId'">Build Id</button>
+          <button type="button" class="btn btn-primary" ng-model="targetType" btn-radio="'BuildVersion'">Version</button>
+        </div>
+      </div>
+      <div class="control-group ng-hide"
+           ng-show="isUpdate();">
+        <label class="control-label" for="inputTargetBuildID">{{(targetType == "BuildId") ? "Target Build ID" : "Build Version"}}</label>
         <div class="controls">
+          <select type="text"
+                  class="input-medium"
+                  ng-show="isUpdate() && targetType == 'BuildVersion'"
+                  ng-options="version for version in firefoxVersions"
+                  ng-model="target_build_version"
+                  ng-change="checkTargetBuild(target_build_version); updateTargetBuildNumber(target_build_version);">
+          </select>
           <input id="inputTargetBuildID"
                  type="text"
-                 ng-required="{{isUpdate()}}"
+                 ng-show="isUpdate() && targetType == 'BuildId'"
+                 ng-required="{{isUpdate() && targetType == 'BuildId'}}"
                  class="input-medium"
                  ng-model="$parent.target_build_id">
         </div>
+      </div>
+      <div class="control-group ng-hide"
+           ng-show="isUpdate();">
+        <label ng-show="targetType == 'BuildVersion'"
+               class="control-label">Build Number</label>
+        <div class="controls"
+             ng-show="isUpdate() && targetType == 'BuildVersion'">
+          <select type="text"
+                  class="input-medium"
+                  ng-options="version for version in target_build_numbers"
+                  ng-model="target_build_number"
+                  ng-change="checkTargetBuild(target_build_version + '#' + target_build_number.split('build')[1])">
+          </select>
+        </div>
+      </div>
+      <div class="control-group ng-hide"
+           ng-show="isUpdate() && targetType == 'BuildVersion'">
+        <label class="control-label">Target build ID</label>
+        <label class="controls input-medium">{{target_build_id}}</label>
       </div>
       <div class="control-group ng-hide"
            ng-show="isUpdate();">

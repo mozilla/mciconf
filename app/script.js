@@ -22,7 +22,7 @@ function notAdded(value) {
 
 var mciconf = angular.module('mciconf', []);
 
-mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function mciconf($scope, $rootScope, $http) {
+mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout', function mciconf($scope, $rootScope, $http, $timeout) {
   $rootScope.builds = [];
   $rootScope.buttonClasses = ["btn-primary", "btn-success", "btn-warning"];
   $rootScope.firefoxVersions = [];
@@ -31,7 +31,11 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
   $rootScope.locales = ["en-US"];
   $rootScope.updateChannels = ["default", "release", "esr", "beta", "aurora", "nightly"];
   $rootScope.updateChannel = "default";
-  $rootScope.target_build_id = "";
+  $rootScope.targetType = "BuildVersion";
+  $rootScope.target_build_id = "..."
+  $rootScope.target_build_version = "";
+  $rootScope.target_build_number = "build1";
+  $rootScope.target_build_numbers = ["build1"];
 
   /**
    * Helper function to load ftp and parse it's elements with a filter callback
@@ -47,8 +51,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
   $rootScope.parseAtAddress = function (aAddress, aTag, aCallbackFilter, aFinalCallback, aErrorCallback) {
     $http({method: 'GET', url: aAddress}).success(function (data){
       var doc = document.createElement('div');
-      doc.innerHTML = data.split('<table>')[1].split('</table>')[0];
-      doc.innerHTML = data.split('<table>')[1].split('</table>')[0];
+      doc.innerHTML = data;
       var elements = doc.getElementsByTagName(aTag);
       for (var element in elements) {
         if (aCallbackFilter(elements[element]))
@@ -70,7 +73,6 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
   });
   $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a',
     function (link) {
-      console.log(link);
       if (link.innerHTML && link.innerHTML.indexOf('-candidates') !== -1) {
         $rootScope.firefoxVersions.push(link.innerHTML.split('-candidates/')[0]);
       }
@@ -79,6 +81,9 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
       $rootScope.firefoxVersions.sort(function(a,b){
         return parseInt(b)-parseInt(a);
       });
+
+      $rootScope.target_build_version = $rootScope.firefoxVersions[0];
+      $rootScope.updateTargetBuildNumber($rootScope.firefoxVersions[0]);
 
       $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a',
         function (link) {
@@ -92,7 +97,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
         function () {
           $rootScope.builds.forEach(function (build, buildIndex) {
             build.firefoxVersions.forEach(function (version, versionIndex) {
-              if (!version.name){
+              if (!version.name) {
                 version.name = $rootScope.firefoxVersions[0];
                 version.type = 'release';
                 $rootScope.$emit('versionChanged', {versionIndex: versionIndex,
@@ -169,17 +174,57 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
    * Helper function to broadcast 'checkAll' so build directive can update itself
    */
   $scope.checkAll = function () {
-    if ($rootScope.isUpdate()) {
+    if ($rootScope.isUpdate() &&  $scope.targetType == 'BuildId') {
       if ($rootScope.target_build_id.length !== 14) {
         $scope.$emit('notify', {type: 'error',
                       message: "Target build-id is not of a correct length"});
-      } else if (/[0-9]?/.test($rootScope.target_build_id)) {
+      } else if ($rootScope.target_build_id.length !==
+                 parseInt($rootScope.target_build_id).toString().length) {
         $scope.$emit('notify', {type: 'error',
                       message: "Target build-id is not a number"});
       }
+    } else if ($rootScope.isUpdate() &&
+               $rootScope.targetType == 'BuildVersion' &&
+               $rootScope.retrieved_build_id === '...') {
+      $scope.$emit('notify', {type: 'error',
+                              message: "Target build-id has not been found"});
     }
     $rootScope.$broadcast('checkAll');
   }
+
+  /**
+   * Checks if the tipped locales are supported, if not it will get removed
+   *
+   * @param {number} aVersionIndex
+   *        Index of version
+   */
+  $rootScope.checkTargetBuild = function (value) {
+    // Cancels the previous timeout handler
+    $timeout.cancel($rootScope.targetChecker);
+    // Setting a timeout handler to check the locales
+    $rootScope.targetChecker = $timeout(function() {
+      var version = value.split('#')[0];
+      var build =  value.split('#')[1] || 1;
+      var found = false;
+      $http({
+        method: 'GET',
+        url: 'http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/' + version + '-candidates/build' + build + '/linux_info.txt'
+      }).success(function (data) {
+        $rootScope.target_build_id = data.split('\n')[0].split('=')[1];
+        if ($rootScope.isUpdate())
+          $scope.$emit('notify', {type: 'success',
+                                  message: "Target build Id has been found"});
+        found = true;
+      });
+      $timeout(function() {
+        if (!found && $rootScope.isUpdate()) {
+          $scope.$emit('notify', {type: 'error',
+                          message: "Target build Id has not been found"});
+          $rootScope.target_build_id = "...";
+        }
+      }, TIMEOUT_CHECKING_LOCALES);
+    }, TIMEOUT_CHECKING_LOCALES, true);
+  };
 
   /**
    * Clears all changes
@@ -216,6 +261,18 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', function 
     if ($rootScope.testrun)
       return $rootScope.testrun.script === 'update';
     else return false;
+  }
+
+  $rootScope.updateTargetBuildNumber = function (aVersion) {
+    $rootScope.target_build_numbers = [];
+    $rootScope.parseAtAddress("http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + aVersion + "-candidates/", "a", function (link) {
+      if (link.innerHTML && link.innerHTML.indexOf("build") !== -1) {
+        $rootScope.target_build_numbers.push(link.innerHTML.split("/")[0]);
+      }
+    }, function () {
+      $rootScope.target_build_number = $rootScope.target_build_numbers[$rootScope.target_build_numbers.length - 1];
+      $rootScope.checkTargetBuild(aVersion + "#" + $rootScope.target_build_number.split("build")[1]);
+    });
   }
 }]);
 
@@ -449,7 +506,7 @@ mciconf.directive('build', function () {
       $scope.removeBuild = function(aIndex) {
         $rootScope.builds[aIndex].platform.added = false;
         $rootScope.builds[aIndex].platformVersion.added = false;
-        $rootScope.builds.splice(index, 1);
+        $rootScope.builds.splice(aIndex, 1);
       };
 
       /**
@@ -622,4 +679,25 @@ mciconf.filter('added', function(){
 
     return filteredArray;
   };
+});
+
+mciconf.directive('btnRadio', function () {
+
+  return {
+    require: 'ngModel',
+    link: function (scope, element, attrs, ngModelCtrl) {
+      ngModelCtrl.$render = function () {
+        element.toggleClass('active', angular.equals(ngModelCtrl.$modelValue, scope.$eval(attrs.btnRadio)));
+      };
+
+      element.bind('click', function () {
+        if (!element.hasClass('active')) {
+          scope.$apply(function () {
+            ngModelCtrl.$setViewValue(scope.$eval(attrs.btnRadio));
+            ngModelCtrl.$render();
+          });
+        }
+      });
+    }
+  }
 });
