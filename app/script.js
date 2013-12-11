@@ -19,6 +19,14 @@ const TIMEOUT_NOTIFICATION_DISPLAYED = 3000;
 function notAdded(value) {
   return !value.added;
 }
+// Helper function to get unique ids
+var getNextUid = function getNextUid() {
+  var counter = 0;
+
+  return function () {
+    return counter += 1;
+  }
+}();
 
 var mciconf = angular.module('mciconf', []);
 
@@ -293,6 +301,7 @@ mciconf.directive('build', function () {
         build.exists = STATE.NOT_CHECKED;
         build.name = ($rootScope.firefoxVersions.length) ? $rootScope.firefoxVersions[0] : "";
         build.type = $rootScope.firefoxVersionsTypes[0];
+        build.locale = "";
         build.availableLocales = [];
         $rootScope.builds[aIndex].firefoxVersions.push(build);
         $scope.versionChanged($rootScope.builds[aIndex].firefoxVersions.length - 1, aIndex);
@@ -336,7 +345,8 @@ mciconf.directive('build', function () {
           if (link.href && link.href.indexOf(link.innerHTML) !== -1) {
             $rootScope.builds[aBuildIndex].
                        firefoxVersions[aVersionIndex].
-                       availableLocales.push(link.innerHTML.split('/')[0]);
+                       availableLocales.push({ locale: link.innerHTML.split('/')[0],
+                                               added: false });
           }
         });
       }
@@ -426,48 +436,6 @@ mciconf.directive('build', function () {
                                     message: 'Build was not found'});
           });
         });
-      };
-
-      /**
-       * Checks if the tipped locales are supported, if not it will get removed
-       *
-       * @param {number} aVersionIndex
-       *        Index of version
-       * @param {number} aBuildIndex
-       *        Index of the build
-       */
-      $scope.checkLocales = function (aVersionIndex, aBuildIndex) {
-        $rootScope.builds[aBuildIndex].
-                   firefoxVersions[aVersionIndex].
-                   exists = STATE.NOT_CHECKED;
-
-        // Cancels the previous timeout handler
-        $timeout.cancel($scope.checker);
-        var locales = $rootScope.builds[aBuildIndex].
-                                 firefoxVersions[aVersionIndex].
-                                 locale.split(" ");
-        var availableLocales = ($rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].availableLocales.length) ?
-                                $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].availableLocales :
-                                $rootScope.locales;
-
-        // Setting a timeout handler to check the locales
-        $scope.checker = $timeout(function() {
-          var availableL = availableLocales.toString().toLowerCase().split(",");
-          for (var i = 0; i < locales.length; i += 1) {
-            if (availableL.indexOf(locales[i].toLowerCase()) === -1) {
-              $rootScope.builds[aBuildIndex].
-                         firefoxVersions[aVersionIndex].
-                         exists =  STATE.NOT_FOUND;
-              $scope.$emit('notify', {type: 'error',
-                                      message: "Locale '" + locales[i] + "' it's not supported!"});
-              locales.splice(i, 1);
-              i -= 1; // If we remove one item the next one will be on the same index
-            } else {
-              locales[i] = availableLocales[availableL.indexOf(locales[i].toLowerCase())];
-            }
-          }
-          $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].locale = locales.join(" ");
-        }, TIMEOUT_CHECKING_LOCALES, true);
       };
 
       /**
@@ -635,6 +603,10 @@ mciconf.directive('notification', function () {
       $scope.alerts = [];
       $scope.history = [];
 
+      $scope.focused = false;
+      $scope.focus = function () {
+        $scope.focused = !$scope.focused;
+      }
       /**
        * Method for closing the notification at index
        *
@@ -649,16 +621,17 @@ mciconf.directive('notification', function () {
       // if the queue is bigger then 3
       $rootScope.$on('notify', function (aEvent, aMessage) {
         $scope.alerts.reverse();
-        $scope.alerts.push({type: aMessage.type, message: aMessage.message});
+        $scope.alerts.push({type: aMessage.type, message: aMessage.message, uid: getNextUid()});
         $scope.alerts.reverse();
         if ($scope.alerts.length > 3)
           $scope.history.push($scope.alerts.pop());
-        $timeout(function () {
-          $scope.history.push($scope.alerts.pop());
-          if(!$scope.$$phase) {
-            $scope.$digest();
-          }
-        }, TIMEOUT_NOTIFICATION_DISPLAYED, false);
+        else
+          $timeout(function () {
+            $scope.history.push($scope.alerts.pop());
+            if(!$scope.$$phase) {
+              $scope.$digest();
+            }
+          }, TIMEOUT_NOTIFICATION_DISPLAYED, false);
       });
     }
   }
@@ -700,4 +673,43 @@ mciconf.directive('btnRadio', function () {
       });
     }
   }
+});
+
+mciconf.directive('dropDownCheckBox', function () {
+
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/drop-down-check-box.html',
+    controller: function ($scope, $rootScope) {
+      $scope.focused = false;
+      $scope.focus = function () {
+        $scope.focused = !$scope.focused;
+      }
+      /**
+       * Callback function to check and add locales
+       * @param aVersionIndex
+       * @param aBuildIndex
+       * @param added
+       * @param locale
+       */
+      $scope.checkMe = function (aVersionIndex, aBuildIndex, added, locale) {
+        if (added) {
+          var l = $rootScope.builds[aBuildIndex].
+                             firefoxVersions[aVersionIndex].locale.length;
+          $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].exists = STATE.NOT_CHECKED;
+          $rootScope.builds[aBuildIndex].
+                     firefoxVersions[aVersionIndex].locale += (!l) ? locale : " " + locale;
+        } else {
+          var locales = $rootScope.builds[aBuildIndex].
+                        firefoxVersions[aVersionIndex].locale.split(" ");
+          locales.pop(locale);
+          $rootScope.builds[aBuildIndex].
+                     firefoxVersions[aVersionIndex].locale = locales.join(" ");
+        }
+      }
+      $scope.mouseleave = function () {
+        $scope.focused = false;
+      }
+    }
+  };
 });

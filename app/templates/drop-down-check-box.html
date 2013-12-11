@@ -1,0 +1,21 @@
+<div style="position: relative;">
+  <button type="button"
+          class="btn {{(!focused) ? '' : 'active' }}"
+          ng-click="focus()">{{(version.locale) ? version.locale : "Pick locales"}}
+  </button>
+  <div class="drop-down-checkbox"
+       style="display:{{(focused) ? 'block' : 'none'}}"
+       ng-mouseleave="mouseleave()">
+    <ul>
+        <li ng-repeat="locale in version.availableLocales">
+          <div class="locale-wrapper">
+            <label for="{{$parent.$index + '-' + '-' + $parent.$parent.$index + locale.locale}}">{{locale.locale}}</label>
+            <input id="{{$parent.$index + '-' + '-' + $parent.$parent.$index + locale.locale}}"
+                   type="checkbox"
+                   ng-model="locale.added"
+                   ng-change="checkMe($parent.$index, $parent.$parent.$index, locale.added, locale.locale)">
+          </div>
+        </li>
+    </ul>
+  </div>
+</div>

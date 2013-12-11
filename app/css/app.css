@@ -46,3 +46,72 @@ form-page .btn-danger {
 .formView input {
   width: 136px;
 }
+.drop-down-checkbox {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.2);
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+drop-down-check-box {
+  display: inline-table;
+  padding: 10px;
+}
+drop-down-check-box button {
+  width: 100px;
+  max-width: 100px;
+  max-height: 30px;
+}
+drop-down-check-box input[type="checkbox"] {
+  display: inline-block;
+  float: right;
+  margin-right: 10px;
+}
+drop-down-check-box label {
+  display: inline-block;
+  min-width: 65px;
+}
+
+.drop-down-checkbox ul {
+  list-style-type: none;
+  width: 530px;
+  -webkit-column-count: 5;
+}
+
+.drop-down-checkbox li:nth-child(odd) {
+  color: rgb(218, 79, 73);
+}
+.drop-down-checkbox li:nth-child(even) {
+  color: rgb(0, 109, 204);
+}
+
+.locale-wrapper {
+  max-width: 100px;
+}
+
+build .btn-danger {
+  margin-top: 10px;
+}
+.logger-wrapper {
+  max-height: 350px;
+  max-width: 400px;
+  overflow-y: auto;
+  width: 400px;
+  padding-right: 20px
+}

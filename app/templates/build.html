@@ -23,12 +23,7 @@
            ng-model="builds[$parent.$index].firefoxVersions[$index].buildNumber"
            ng-change="buildNumberChanged($index, $parent.$index)">
     </select>
-    <input type="text"
-           class="input-medium"
-           placeholder="Locales"
-           ng-model="version.locale"
-           ng-change="checkLocales($index, $parent.$index)">
-    </input>
+    <drop-down-check-box></drop-down-check-box>
     <button class="btn {{buttonClasses[version.exists]}}"
             type='button'
             ng-click="checkBuild($index, $parent.$index)">
