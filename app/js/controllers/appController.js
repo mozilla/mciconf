@@ -45,7 +45,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $http.get('data/dashboards.json').then(function (res){
     $rootScope.dashboards = res.data.dashboards;
     $rootScope.dashboards_url = res.data.dashboards_url;
-    $rootScope.dashboard = $scope.dashboards[0];
+    $rootScope.dashboard = $rootScope.dashboards[0];
   });
   $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a',
     function (link) {
@@ -178,6 +178,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $rootScope.checkTargetBuild = function (value) {
     // Cancels the previous timeout handler
     $timeout.cancel($rootScope.targetChecker);
+    $rootScope.target_build_id = "";
     // Setting a timeout handler to check the locales
     $rootScope.targetChecker = $timeout(function() {
       var version = value.split('#')[0];
@@ -206,7 +207,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   /**
    * Clears all changes
    */
-  $scope.clear = function () {
+  $rootScope.clear = function () {
     $rootScope.testrun = $rootScope.testruns[0];
     $rootScope.dashboard = $rootScope.dashboards[0];
     $rootScope.target_build_id = "";
@@ -242,6 +243,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
 
   $rootScope.updateTargetBuildNumber = function (aVersion) {
     $rootScope.target_build_numbers = [];
+    $rootScope.target_build_id = "";
     $rootScope.parseAtAddress("http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + aVersion + "-candidates/", "a", function (link) {
       if (link.innerHTML && link.innerHTML.indexOf("build") !== -1) {
         $rootScope.target_build_numbers.push(link.innerHTML.split("/")[0]);

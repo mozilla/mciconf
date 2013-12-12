@@ -27,7 +27,7 @@
                   ng-show="isUpdate() && targetType == 'BuildVersion'"
                   ng-options="version for version in firefoxVersions"
                   ng-model="target_build_version"
-                  ng-change="checkTargetBuild(target_build_version); updateTargetBuildNumber(target_build_version);">
+                  ng-change="updateTargetBuildNumber(target_build_version);">
           </select>
           <input id="inputTargetBuildID"
                  type="text"
@@ -54,7 +54,11 @@
       <div class="control-group ng-hide"
            ng-show="isUpdate() && targetType == 'BuildVersion'">
         <label class="control-label">Target build ID</label>
-        <label class="controls input-medium">{{target_build_id}}</label>
+        <label class="controls input-medium">
+          <i class="icon-refresh spin"
+             ng-show="!target_build_id"
+             style="position: relative; left: 50px"></i> {{target_build_id}}
+        </label>
       </div>
       <div class="control-group ng-hide"
            ng-show="isUpdate();">
@@ -63,7 +67,7 @@
           <select id="inputUpdateChannel"
                  type="text"
                  class="input-medium"
-                 ng-model="updateChannel"
+                 ng-model="$parent.updateChannel"
                  ng-options="chanel for chanel in updateChannels">
           </select>
         </div>
@@ -73,7 +77,7 @@
       <div class="controls">
         <select id="inputDashboard"
                 class="input-medium"
-                ng-model="dashboard"
+                ng-model="$parent.dashboard"
                 ng-options="d for d in dashboards">
         </select>
       </div>
@@ -88,12 +92,12 @@
     <h5 class="buildChild">Build Number</h5>
     <h5 class="buildChild">Locales</h5>
     <li ng-repeat="build in builds">
-      <build ></build>
+      <build></build>
     </li>
   </ul>
   <button class="btn btn-success"
           ng-disabled="!platformsLeft()"
-          ng-click="addBuild();"><i class="icon-plus"></i> Add build</button>
+          ng-click="addBuild();"><i class="icon-plus"></i> Add a platform </button>
   <button class="btn {{buttonClasses[checkAllBuilds()]}}"
           ng-click="checkAll()">
     <i class="{{iconClasses[checkAllBuilds()]}}"></i>
