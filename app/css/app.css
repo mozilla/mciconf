@@ -120,6 +120,7 @@ build .btn-danger {
 .upload {
   float: right;
   display: inline-block;
+  margin-left: 10px;
 }
 input[type=file] {
 	position: relative;
@@ -176,4 +177,7 @@ input[type=file] {
 
 build .icon-minus-sign:hover {
   cursor:pointer;
+}
+#config-saver {
+  display: none;
 }
