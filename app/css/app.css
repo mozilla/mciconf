@@ -81,12 +81,11 @@ drop-down-check-box button {
 }
 drop-down-check-box input[type="checkbox"] {
   display: inline-block;
-  float: right;
   margin-right: 10px;
 }
 drop-down-check-box label {
   display: inline-block;
-  min-width: 65px;
+  min-width: 50px;
 }
 
 .drop-down-checkbox ul {
@@ -102,7 +101,13 @@ drop-down-check-box label {
 .drop-down-checkbox li:nth-child(even) {
   color: rgb(50, 150, 200);
 }
-
+#allCheckedLabel {
+  font-size: medium;
+  font-weight: bold;
+}
+#allChecked {
+  margin-left: 25px;
+}
 .locale-wrapper {
   max-width: 100px;
 }
@@ -180,4 +185,17 @@ build .icon-minus-sign:hover {
 }
 #config-saver {
   display: none;
+}
+#inputUpdateChannel {
+  opacity: 0;
+  width: 20px;
+  display: inline-block;
+  position: relative;
+  left: -20px;
+  z-index: 10;
+}
+channel .icon-arrow-down {
+  display: inline-block;
+  position: relative;
+  left: -45px;
 }

@@ -7,7 +7,6 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $rootScope.locales = ["en-US"];
   $rootScope.updateChannels = ["default", "release", "esr", "beta", "aurora", "nightly"];
   $rootScope.updateChannel = "default";
-  $rootScope.targetType = "BuildVersion";
   $rootScope.target_build_id = "..."
   $rootScope.target_build_version = "";
   $rootScope.target_build_number = "build1";
@@ -66,7 +65,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
           if (link.innerHTML){
             var v = link.innerHTML.split('/')[0];
             if($rootScope.firefoxVersions.indexOf(v) !== -1) {
-              $rootScope.firefoxVersionsTypes[$rootScope.firefoxVersions.indexOf(v)] = 'release';
+              $rootScope.firefoxVersionsTypes[$rootScope.firefoxVersions.indexOf(v)] = 'final';
             }
           }
         },
@@ -75,7 +74,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
             build.firefoxVersions.forEach(function (version, versionIndex) {
               if (!version.name) {
                 version.name = $rootScope.firefoxVersions[0];
-                version.type = 'release';
+                version.type = 'final';
                 $rootScope.$emit('versionChanged', {versionIndex: versionIndex,
                   buildIndex: buildIndex});
               }
@@ -151,18 +150,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
    * Helper function to broadcast 'checkAll' so build directive can update itself
    */
   $scope.checkAll = function () {
-    if ($rootScope.isUpdate() &&  $scope.targetType == 'BuildId') {
-      if ($rootScope.target_build_id.length !== 14) {
-        $scope.$emit('notify', {type: 'error',
-                      message: "Target build-id is not of a correct length"});
-      } else if ($rootScope.target_build_id.length !==
-                 parseInt($rootScope.target_build_id).toString().length) {
-        $scope.$emit('notify', {type: 'error',
-                      message: "Target build-id is not a number"});
-      }
-    } else if ($rootScope.isUpdate() &&
-               $rootScope.targetType == 'BuildVersion' &&
-               $rootScope.retrieved_build_id === '...') {
+    if ($rootScope.isUpdate() && $rootScope.retrieved_build_id === '...') {
       $scope.$emit('notify', {type: 'error',
                               message: "Target build-id has not been found"});
     }

@@ -37,7 +37,7 @@ mciconf.directive('build', function () {
                                  name.split("#")[0];
         var candidate = $rootScope.builds[aBuildIndex].
                                    firefoxVersions[aVersionIndex].
-                                   buildNumber !== 'release';
+                                   buildNumber !== 'final';
 
         url += (candidate) ? "candidates/" : "releases/";
         url += version + ((candidate) ? "-candidates/" : "");
@@ -78,7 +78,7 @@ mciconf.directive('build', function () {
 
         var candidate = $rootScope.builds[aBuildIndex].
                                    firefoxVersions[aVersionIndex].
-                                   buildNumber !== 'release';
+                                   buildNumber !== 'final';
         var file = "";
         var foundBuilds = 0;
         var responseReceived = 0;
@@ -226,7 +226,7 @@ mciconf.directive('build', function () {
         // If the build has a release version we will set it as default in build numbers array
         $rootScope.builds[aBuildIndex].
                    firefoxVersions[aVersionIndex].
-                   buildNumbers = (isRelease) ? ['release'] : [];
+                   buildNumbers = (isRelease) ? ['final'] : [];
         var versionName = $rootScope.builds[aBuildIndex].
                                  firefoxVersions[aVersionIndex].
                                  name + "-candidates/";
@@ -288,7 +288,7 @@ mciconf.directive('formPage', function () {
        * @returns {number}
        *          The worst state found
        */
-      $scope.checkAllBuilds = function () {
+      $rootScope.checkAllBuilds = function () {
         var returnValue = STATE.FOUND;
         $rootScope.builds.some(function (build) {
           build.firefoxVersions.some(function (version) {
@@ -403,6 +403,7 @@ mciconf.directive('dropDownCheckBox', function () {
     restrict: 'AE',
     templateUrl: 'templates/drop-down-check-box.html',
     controller: function ($scope, $rootScope) {
+      $scope.allChecked = false;
       $scope.focused = false;
       $scope.focus = function () {
         $scope.focused = !$scope.focused;
@@ -427,6 +428,28 @@ mciconf.directive('dropDownCheckBox', function () {
           locales.pop(locale);
           $rootScope.builds[aBuildIndex].
                      firefoxVersions[aVersionIndex].locale = locales.join(" ");
+        }
+      }
+      $scope.checkAll = function (aVersionIndex, aBuildIndex) {
+        if (!$scope.allChecked) {
+          $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].availableLocales.forEach(function (locale) {
+            locale.added = false;
+          });
+          $rootScope.builds[aBuildIndex].
+                     firefoxVersions[aVersionIndex].
+                     locale = "";
+        } else {
+          $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].availableLocales.forEach(function (locale) {
+            if (!locale.added) {
+              var l = $rootScope.builds[aBuildIndex].
+                                 firefoxVersions[aVersionIndex].
+                                 locale.length;
+              $rootScope.builds[aBuildIndex].
+                         firefoxVersions[aVersionIndex].
+                         locale += ((!l) ? locale.locale : " " + locale.locale);
+              locale.added = true;
+            }
+          });
         }
       }
       $scope.mouseleave = function () {
@@ -491,7 +514,6 @@ mciconf.directive('configPicker', function () {
                 $rootScope.updateChannel = config.testrun.channel;
                 if ($rootScope.updateChannels.indexOf(config.testrun.channel) === -1)
                   $rootScope.updateChannels.push(config.testrun.channel);
-                $rootScope.targetType = 'BuildId';
                 $rootScope.target_build_version = "";
                 $rootScope.target_build_number = "";
               }
@@ -509,9 +531,9 @@ mciconf.directive('configPicker', function () {
                                             message: 'Build ' + version + ' dose not exists'});
 
                   var v = {};
-                  v.exists = STATE.NOT_CHECKED;
+                  v.exists = (!name) ? STATE.NOT_FOUND : STATE.NOT_CHECKED;
                   v.name = name;
-                  v.buildNumber = (version.indexOf("#") !== -1) ?  ("build" + version.split("#")[1]) : "release";
+                  v.buildNumber = (version.indexOf("#") !== -1) ?  ("build" + version.split("#")[1]) : "final";
                   v.buildNumbers = [v.buildNumber];
                   v.locale = config[platform][version];
                   v.availableLocales = [];
@@ -573,6 +595,19 @@ mciconf.directive('configSaver', function () {
         link.href = URL.createObjectURL(new Blob([content], {type: "text/plain"}));
         link.download = "onDemandConfig.ini";
         link.click();
+      }
+    }
+  }
+});
+mciconf.directive('channel', function () {
+
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/channel.html',
+    controller: function ($scope, $rootScope) {
+      $scope.channel = "default";
+      $scope.change = function () {
+        $rootScope.updateChannel = $scope.channel;
       }
     }
   }

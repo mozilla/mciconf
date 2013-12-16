@@ -11,67 +11,42 @@
         </select>
       </div>
     </div>
-      <div class="control-group ng-hide"
-           ng-show="isUpdate();">
-        <div class="btn-group controls">
-          <button type="button" class="btn btn-primary" ng-model="targetType" btn-radio="'BuildId'">Build Id</button>
-          <button type="button" class="btn btn-primary" ng-model="targetType" btn-radio="'BuildVersion'">Version</button>
-        </div>
+    <div class="control-group ng-hide"
+         ng-show="isUpdate()">
+      <label class="control-label">Build Version</label>
+      <div class="controls">
+        <select type="text"
+                class="input-medium"
+                ng-show="isUpdate()"
+                ng-options="version for version in firefoxVersions"
+                ng-model="target_build_version"
+                ng-change="updateTargetBuildNumber(target_build_version)">
+        </select>
       </div>
-      <div class="control-group ng-hide"
-           ng-show="isUpdate();">
-        <label class="control-label" for="inputTargetBuildID">{{(targetType == "BuildId") ? "Target Build ID" : "Build Version"}}</label>
-        <div class="controls">
-          <select type="text"
-                  class="input-medium"
-                  ng-show="isUpdate() && targetType == 'BuildVersion'"
-                  ng-options="version for version in firefoxVersions"
-                  ng-model="target_build_version"
-                  ng-change="updateTargetBuildNumber(target_build_version);">
-          </select>
-          <input id="inputTargetBuildID"
-                 type="text"
-                 ng-show="isUpdate() && targetType == 'BuildId'"
-                 ng-required="{{isUpdate() && targetType == 'BuildId'}}"
-                 class="input-medium"
-                 ng-model="$parent.target_build_id">
-        </div>
-      </div>
-      <div class="control-group ng-hide"
-           ng-show="isUpdate();">
-        <label ng-show="targetType == 'BuildVersion'"
-               class="control-label">Build Number</label>
-        <div class="controls"
-             ng-show="isUpdate() && targetType == 'BuildVersion'">
-          <select type="text"
-                  class="input-medium"
-                  ng-options="version for version in target_build_numbers"
-                  ng-model="target_build_number"
-                  ng-change="checkTargetBuild(target_build_version + '#' + target_build_number.split('build')[1])">
-          </select>
-        </div>
-      </div>
-      <div class="control-group ng-hide"
-           ng-show="isUpdate() && targetType == 'BuildVersion'">
-        <label class="control-label">Target build ID</label>
-        <label class="controls input-medium">
-          <i class="icon-refresh spin"
-             ng-show="!target_build_id"
-             style="position: relative; left: 50px"></i> {{target_build_id}}
-        </label>
-      </div>
-      <div class="control-group ng-hide"
-           ng-show="isUpdate();">
-        <label class="control-label" for="inputUpdateChannel">Update Channel</label>
-        <div class="controls">
-          <select id="inputUpdateChannel"
-                 type="text"
-                 class="input-medium"
-                 ng-model="$parent.updateChannel"
-                 ng-options="chanel for chanel in updateChannels">
-          </select>
-        </div>
     </div>
+    <div class="control-group ng-hide"
+         ng-show="isUpdate()">
+      <label class="control-label">Build Number</label>
+      <div class="controls"
+           ng-show="isUpdate()">
+        <select type="text"
+                class="input-medium"
+                ng-options="version for version in target_build_numbers"
+                ng-model="target_build_number"
+                ng-change="checkTargetBuild(target_build_version + '#' + target_build_number.split('build')[1])">
+        </select>
+      </div>
+    </div>
+    <div class="control-group ng-hide"
+         ng-show="isUpdate()">
+      <label class="control-label">Build ID</label>
+      <label class="controls input-medium">
+        <i class="icon-refresh spin"
+           ng-show="!target_build_id"
+           style="position: relative; left: 50px"></i> {{target_build_id}}
+      </label>
+    </div>
+    <channel></channel>
     <div class="control-group">
       <label class="control-label" for="inputDashboard">Dashboard</label>
       <div class="controls">
@@ -97,7 +72,7 @@
   </ul>
   <button class="btn btn-success"
           ng-disabled="!platformsLeft()"
-          ng-click="addBuild();"><i class="icon-plus"></i> Add a platform </button>
+          ng-click="addBuild()"><i class="icon-plus"></i> Add a platform </button>
   <button class="btn {{buttonClasses[checkAllBuilds()]}}"
           ng-click="checkAll()">
     <i class="{{iconClasses[checkAllBuilds()]}}"></i>

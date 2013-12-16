@@ -6,14 +6,20 @@
   <div class="drop-down-checkbox"
        style="display:{{(focused) ? 'block' : 'none'}}"
        ng-mouseleave="mouseleave()">
+    <input type="checkbox"
+           id="allChecked"
+           ng-model="allChecked"
+           ng-change="checkAll($index, $parent.$index)">
+    <label for="allChecked"
+           id="allCheckedLabel">Check All</label>
     <ul>
         <li ng-repeat="locale in version.availableLocales">
           <div class="locale-wrapper">
-            <label for="{{$parent.$index + '-' + '-' + $parent.$parent.$index + locale.locale}}">{{locale.locale}}</label>
             <input id="{{$parent.$index + '-' + '-' + $parent.$parent.$index + locale.locale}}"
                    type="checkbox"
                    ng-model="locale.added"
                    ng-change="checkMe($parent.$index, $parent.$parent.$index, locale.added, locale.locale)">
+            <label for="{{$parent.$index + '-' + '-' + $parent.$parent.$index + locale.locale}}">{{locale.locale}}</label>
           </div>
         </li>
     </ul>
