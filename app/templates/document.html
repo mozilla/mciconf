@@ -5,6 +5,6 @@ report={{dashboards_url + dashboard + '/'}}
      ng-show="isUpdate();">target-build-id={{target_build_id}}
 channel={{updateChannel}}</div><div ng-repeat="build in builds">
 [{{builds[$index].platform.labels}} {{builds[$index].platformVersion.labels}}]
-platform={{builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefoxVersions">
+platform={{(builds[$index].platformVersion.platform) ? builds[$index].platformVersion.platform : builds[$index].platform.platform}}<span ng-repeat="version in builds[$index].firefoxVersions">
 {{version.name}}{{(version.buildNumber.indexOf('build') !== -1) ? '#' + version.buildNumber.split('build')[1] : ''}}={{version.locale}}</span></div>
 </pre>

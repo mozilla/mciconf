@@ -14,7 +14,8 @@
   {"name": "Windows", "labels": "windows", "platform": "win32", "added": false, "versions":[
     {"name": "XP", "labels": "xp 32bit", "added": false},
     {"name": "Vista", "labels": "vista 32bit", "added": false},
-    {"name": "7", "labels": "7 32bit", "added": false},
+    {"name": "7 (32bit)", "labels": "7 32bit", "added": false},
+    {"name": "7 (64bit)", "labels": "7 64bit", "added": false},
     {"name": "8 (32bit)", "labels": "8 32bit", "added": false},
     {"name": "8 (64bit)", "labels": "8 64bit", "added": false},
     {"name": "8.1 (32bit)", "labels": "8.1 32bit", "added": false},

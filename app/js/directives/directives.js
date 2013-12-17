@@ -234,9 +234,13 @@ mciconf.directive('build', function () {
 
         $rootScope.parseAtAddress(address, 'a', function (link) {
           if (link.innerHTML && link.innerHTML.indexOf('build') !== -1) {
+            var build = link.innerHTML.split('/')[0];
+            if ($rootScope.builds[aBuildIndex].
+                       firefoxVersions[aVersionIndex].
+                       buildNumbers.indexOf(build) === -1)
             $rootScope.builds[aBuildIndex].
                        firefoxVersions[aVersionIndex].
-                       buildNumbers.push(link.innerHTML.split('/')[0]);
+                       buildNumbers.push(build);
           }
         },
         function () {
