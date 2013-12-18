@@ -5,7 +5,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $rootScope.firefoxVersionsTypes = [];
   $rootScope.iconClasses = ["icon-question-sign", "icon-ok", "icon-remove"];
   $rootScope.locales = ["en-US"];
-  $rootScope.updateChannels = ["default", "release", "esr", "beta", "aurora", "nightly"];
+  $rootScope.updateChannels = ["releasetest", "betatest", "esrtest", "default", "release", "esr", "beta", "aurora", "nightly"];
   $rootScope.updateChannel = "default";
   $rootScope.target_build_id = "..."
   $rootScope.target_build_version = "";
@@ -185,8 +185,10 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
       $timeout(function() {
         if (!found && $rootScope.isUpdate()) {
           $scope.$emit('notify', {type: 'error',
-                          message: "Target build Id has not been found"});
-          $rootScope.target_build_id = "...";
+                                  message: "Target build Id has not been found, trying again"});
+        }
+        if (!found) {
+          $rootScope.checkTargetBuild(value);
         }
       }, TIMEOUT_CHECKING_LOCALES);
     }, TIMEOUT_CHECKING_LOCALES, true);

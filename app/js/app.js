@@ -13,7 +13,7 @@ const STATE = {
   NOT_FOUND: 2
 }
 
-const TIMEOUT_CHECKING_LOCALES = 3000;
+const TIMEOUT_CHECKING_LOCALES = 5000;
 const TIMEOUT_NOTIFICATION_DISPLAYED = 3000;
 
 // Helper callback used to filter platforms
