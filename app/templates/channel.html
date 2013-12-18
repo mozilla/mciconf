@@ -1,0 +1,16 @@
+<div class="control-group ng-hide"
+     ng-show="isUpdate();">
+  <label class="control-label" for="inputUpdateChannel">Update Channel</label>
+  <div class="controls">
+    <input type="text"
+           ng-model="$parent.updateChannel">
+    <select id="inputUpdateChannel"
+           type="text"
+           class="input-medium"
+           ng-model="channel"
+           ng-change="change()"
+           ng-options="chanel for chanel in updateChannels">
+    </select>
+    <i class="icon-arrow-down"></i>
+  </div>
+</div>

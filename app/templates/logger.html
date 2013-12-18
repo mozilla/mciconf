@@ -1,0 +1,23 @@
+<div style="max-width: 400px">
+  <legend>Logger</legend>
+  <button type="button"
+          style="position: relative; top: -55px; float: right"
+          class="btn {{(!focused) ? '' : 'active' }}"
+          ng-click="focus()"> See all history
+  </button>
+  <div class="logger-wrapper">
+    <div ng-repeat="alert in history track by alert.uid"
+         class="alert"
+         style="display:{{(focused) ? 'block' : 'none'}}"
+         ng-class="alert.type && 'alert-' + alert.type"> {{alert.message}}
+    </div>
+    <div ng-repeat="alert in alerts track by alert.uid"
+         class='alert'
+         ng-class='alert.type && "alert-" + alert.type'>
+      {{alert.message}}
+      <button type='button'
+              class='close'
+              ng-click="closeAlert($index)">x</button>
+    </div>
+  </div>
+</div>

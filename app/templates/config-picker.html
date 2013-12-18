@@ -1,0 +1,8 @@
+<span class="btn btn-{{(versionsExists()) ? 'success' : 'danger'}} upload">
+  <i class="icon-upload"></i>
+  <span>Pick a config file</span>
+  <input type="file"
+         name="file"
+         ng-show="versionsExists()"
+         onchange="angular.element(this).scope().fileNameChaged(this.files[0])"/>
+</span>

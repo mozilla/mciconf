@@ -1,1 +1,201 @@
 /* app css stylesheet */
+#buildsList li {
+  margin-bottom: 2px;
+}
+.buildsVersions {
+  display: inline-block;
+}
+.buildChild {
+  display: inline-table;
+}
+.buildVersion {
+  margin-bottom: 2px;
+}
+.addVersion {
+  width: 95%;
+}
+.formView {
+  display: inline-table;
+  margin-right: 5px;
+  width: 45%;
+  max-width: 45%;
+  height: 150px;
+  max-height: 150px;
+}
+.alert {
+  position: relative;
+  margin-bottom: 5px;
+  min-height: 15px;
+  overflow-x: hidden;
+}
+.alert .close {
+  top: -2px;
+  right: -21px;
+  line-height: 20px;
+}
+.buildVersion select, .buildVersion input{
+  width: 100px;
+}
+h5 {
+  min-width: 100px;
+}
+form-page .btn-danger {
+  float: right;
+  width: 131px;
+}
+.formView input {
+  width: 136px;
+}
+.drop-down-checkbox {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.2);
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+drop-down-check-box {
+  display: inline-table;
+  padding: 10px;
+}
+drop-down-check-box button {
+  width: 100px;
+  max-width: 100px;
+  max-height: 30px;
+  overflow: hidden;
+}
+drop-down-check-box input[type="checkbox"] {
+  display: inline-block;
+  margin-right: 10px;
+}
+drop-down-check-box label {
+  display: inline-block;
+  min-width: 50px;
+}
+
+.drop-down-checkbox ul {
+  list-style-type: none;
+  width: 530px;
+  -webkit-column-count: 5;
+  -moz-column-count:    5;
+}
+
+.drop-down-checkbox li:nth-child(odd) {
+  color: rgb(50, 100, 150);
+}
+.drop-down-checkbox li:nth-child(even) {
+  color: rgb(50, 150, 200);
+}
+#allCheckedLabel {
+  font-size: medium;
+  font-weight: bold;
+}
+#allChecked {
+  margin-left: 25px;
+}
+.locale-wrapper {
+  max-width: 100px;
+}
+
+build .btn-danger {
+  margin-top: 10px;
+}
+.logger-wrapper {
+  max-height: 350px;
+  max-width: 400px;
+  overflow-y: auto;
+  width: 400px;
+  padding-right: 20px
+}
+.upload {
+  float: right;
+  display: inline-block;
+  margin-left: 10px;
+}
+input[type=file] {
+	position: relative;
+	text-align: right;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+  left: -80px;
+  max-width: 160px;
+  max-height: 100px;
+  margin-right: -100px;
+  margin-left: -55px;
+  margin-top: -15px;
+  margin-bottom: -15px;
+}
+
+.spin {
+  -webkit-animation: spin .4s infinite linear;
+  -moz-animation: spin .4s infinite linear;
+  -o-animation: spin .4s infinite linear;
+  animation: spin .4s infinite linear;
+     -webkit-transform-origin: 50% 58%;
+         transform-origin:50% 58%;
+         -ms-transform-origin:50% 58%; /* IE 9 */
+}
+
+@-moz-keyframes spin {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+build .icon-minus-sign:hover {
+  cursor:pointer;
+}
+#config-saver {
+  display: none;
+}
+#inputUpdateChannel {
+  opacity: 0;
+  width: 20px;
+  display: inline-block;
+  position: relative;
+  left: -20px;
+  z-index: 10;
+}
+channel .icon-arrow-down {
+  display: inline-block;
+  position: relative;
+  left: -45px;
+}
