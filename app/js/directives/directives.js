@@ -47,15 +47,16 @@ mciconf.directive('build', function () {
         url += PLATFORM_FRAGMENTS[$rootScope.builds[aBuildIndex].platformVersion.platform ||
                                   $rootScope.builds[aBuildIndex].platform.platform] + "/";
 
-        // Clear the available locales of the current build
-        $rootScope.builds[aBuildIndex].
-                   firefoxVersions[aVersionIndex].
-                   availableLocales = [];
-        $scope.unCheck(aVersionIndex, aBuildIndex);
 
         // Parsing the ftp directory of the current build to retrieve
         // the current build locals
-        $rootScope.parseAtAddress(url, "a", function (link) {
+        $rootScope.parseAtAddress(url, "a", function () {
+          // Clear the available locales of the current build
+          $rootScope.builds[aBuildIndex].
+                     firefoxVersions[aVersionIndex].
+                     availableLocales = [];
+          $scope.unCheck(aVersionIndex, aBuildIndex);
+        }, function (link) {
           if (link.href && link.href.indexOf(link.innerHTML) !== -1) {
             var locale = $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].locale;
             $rootScope.builds[aBuildIndex].
@@ -127,7 +128,7 @@ mciconf.directive('build', function () {
         }
 
         locales.forEach(function (locale, index) {
-          $rootScope.parseAtAddress(url + locale + "/", "a", function (link) {
+          $rootScope.parseAtAddress(url + locale + "/", "a", undefined, function (link) {
               responseReceived += 1;
             if (link.innerHTML && link.innerHTML.indexOf(file)) {
               foundBuilds += 1;
@@ -232,15 +233,16 @@ mciconf.directive('build', function () {
                                  name + "-candidates/";
         var address = "http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + versionName;
 
-        $rootScope.parseAtAddress(address, 'a', function (link) {
-          if (link.innerHTML && link.innerHTML.indexOf('build') !== -1) {
-            var build = link.innerHTML.split('/')[0];
-            if ($rootScope.builds[aBuildIndex].
-                       firefoxVersions[aVersionIndex].
-                       buildNumbers.indexOf(build) === -1)
+        $rootScope.parseAtAddress(address, 'a', function () {
             $rootScope.builds[aBuildIndex].
                        firefoxVersions[aVersionIndex].
-                       buildNumbers.push(build);
+                       buildNumbers = [];
+        },
+        function (link) {
+          if (link.innerHTML && link.innerHTML.indexOf('build') !== -1) {
+            $rootScope.builds[aBuildIndex].
+                       firefoxVersions[aVersionIndex].
+                       buildNumbers.push(link.innerHTML.split('/')[0]);
           }
         },
         function () {

@@ -3,5 +3,6 @@
   {"name":"Endurance", "script":"endurance"},
   {"name":"Functional", "script":"functional"},
   {"name":"Remote", "script":"remote"},
-  {"name":"Update", "script":"update"}
+  {"name":"Update", "script":"update"},
+  {"name":"L10n", "script":"l10n"}
 ]

@@ -23,8 +23,10 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
    * @param aFinalCallback
    *        A final callback to be called after the the parsing is done
    */
-  $rootScope.parseAtAddress = function (aAddress, aTag, aCallbackFilter, aFinalCallback, aErrorCallback) {
+  $rootScope.parseAtAddress = function (aAddress, aTag, aPreHook, aCallbackFilter, aPostHook, aErrorCallback) {
     $http({method: 'GET', url: aAddress}).success(function (data){
+      if (aPreHook)
+        aPreHook();
       var doc = document.createElement('div');
       doc.innerHTML = data;
       var elements = doc.getElementsByTagName(aTag);
@@ -32,8 +34,8 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
         if (aCallbackFilter(elements[element]))
           break;
       }
-      if (aFinalCallback)
-        aFinalCallback();
+      if (aPostHook)
+        aPostHook();
     }).error(function() {
       if (aErrorCallback)
         aErrorCallback();
@@ -46,7 +48,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
     $rootScope.dashboards_url = res.data.dashboards_url;
     $rootScope.dashboard = $rootScope.dashboards[0];
   });
-  $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a',
+  $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a', undefined,
     function (link) {
       if (link.innerHTML && link.innerHTML.indexOf('-candidates') !== -1) {
         $rootScope.firefoxVersions.push(link.innerHTML.split('-candidates/')[0]);
@@ -60,7 +62,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
       $rootScope.target_build_version = $rootScope.firefoxVersions[0];
       $rootScope.updateTargetBuildNumber($rootScope.firefoxVersions[0]);
 
-      $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a',
+      $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a', undefined,
         function (link) {
           if (link.innerHTML){
             var v = link.innerHTML.split('/')[0];
@@ -232,9 +234,10 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   }
 
   $rootScope.updateTargetBuildNumber = function (aVersion) {
-    $rootScope.target_build_numbers = [];
-    $rootScope.target_build_id = "";
-    $rootScope.parseAtAddress("http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + aVersion + "-candidates/", "a", function (link) {
+    $rootScope.parseAtAddress("http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + aVersion + "-candidates/", "a", function () {
+      $rootScope.target_build_numbers = [];
+      $rootScope.target_build_id = "";
+    }, function (link) {
       if (link.innerHTML && link.innerHTML.indexOf("build") !== -1) {
         $rootScope.target_build_numbers.push(link.innerHTML.split("/")[0]);
       }
