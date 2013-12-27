@@ -1,3 +1,4 @@
+// START - Global constants and helper functions
 const PLATFORM_FRAGMENTS = {
   linux: 'linux-i686',
   linux64: 'linux-x86_64',
@@ -28,7 +29,22 @@ var getNextUid = function getNextUid() {
     return counter += 1;
   }
 }();
+// END
 
-var mciconf = angular.module('mciconf', []);
-
-
+define(['angular',
+        'controllers/controllers',
+        'controllers/mainController',
+        'filters/filters',
+        'filters/added',
+        'directives/directives',
+        'directives/build',
+        'directives/formPage',
+        'directives/notification',
+        'directives/document',
+        'directives/btnRadio',
+        'directives/dropDownCheckBox',
+        'directives/configPicker',
+        'directives/channel',
+        'directives/configSaver'], function (angular) {
+  return angular.module('mciconf', ['controllers', 'filters','directives']);
+});
