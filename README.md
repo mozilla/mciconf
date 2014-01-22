@@ -10,10 +10,11 @@ Mozmill CI Configuration Generator is an application that intends to generate va
 * Logger: all the errors or success messages will be displayed under the "Logger" section, to see older logs hit the "See all history" button at the top of the page.
 
 #Requirements
-* We want our application to generate well formed config files
-* Should do field validation
-* Should check if the given builds exists
-* Should be able to load and check external files
-* Should be able to save jobs and load them back (localStorage)
+*  Logger should be separate from the notifications and simply keep a full log in a scrollable list with the latest at the top. It can be hidden by default.
+*  Should not be able to select the same build more than once.
+*  If a failure happens during a check its hard to see where a fix has to be made, include more information to the log entries.
+*  It would be good to have a way to linkify the config so it can be linked to from our wiki pages
+*  We should use the dashboard names rather than their subdomains
+*  Auto generate a full config file based on known-good defaults.
 
 
