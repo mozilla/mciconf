@@ -78,6 +78,8 @@ drop-down-check-box button {
   max-width: 100px;
   max-height: 30px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 drop-down-check-box input[type="checkbox"] {
   display: inline-block;
