@@ -1,5 +1,6 @@
 <button class="btn upload {{buttonClasses[checkAllBuilds()]}}"
         type="button"
+        ng-disabled="checkAllBuilds() !== 1"
         ng-click="save()">
   <i class="icon-download"></i>
   <span>Save the config file</span>
