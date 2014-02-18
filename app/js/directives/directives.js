@@ -346,24 +346,43 @@ mciconf.directive('notification', function () {
        *        Index of notification we close
        */
       $scope.closeAlert = function (aIndex) {
-        $scope.alerts.splice(aIndex, 1);
+        var alert = $scope.alerts.splice(aIndex, 1)[0];
+        $scope.history.push(alert);
       }
 
       // Listener to add an notification at the firs index and to remove the last
       // if the queue is bigger then 3
       $rootScope.$on('notify', function (aEvent, aMessage) {
         $scope.alerts.reverse();
-        $scope.alerts.push({type: aMessage.type, message: aMessage.message, uid: getNextUid()});
+        $scope.alerts.push({type: aMessage.type,
+                            message: aMessage.message,
+                            uid: getNextUid()});
         $scope.alerts.reverse();
-        if ($scope.alerts.length > 3)
-          $scope.history.push($scope.alerts.pop());
-        else
-          $timeout(function () {
-            $scope.history.push($scope.alerts.pop());
-            if(!$scope.$$phase) {
-              $scope.$digest();
+
+        // To avoid a long list of irrelevant messages we if we have more than
+        // 3 messages we move the success notifications to history or
+        // set a timer to move them after a given amount of time
+        if (aMessage.type === 'success') {
+          var lastSuccess = $scope.alerts.filter(function (element) {
+            return element.type === 'success';
+          })[0];
+          var lastSuccessIndex = $scope.alerts.indexOf(lastSuccess);
+          if (lastSuccessIndex !== -1) {
+            // If we have more than 3 messages in log remove the last
+            // message of success type or set a timer to remove it later
+            if ($scope.alerts.length > 3) {
+              $scope.history.push($scope.alerts.splice(lastSuccessIndex, 1)[0]);
             }
-          }, TIMEOUT_NOTIFICATION_DISPLAYED, false);
+            else {
+              $timeout(function () {
+                $scope.history.push($scope.alerts.splice(lastSuccessIndex, 1)[0]);
+                if (!$scope.$$phase) {
+                  $scope.$digest();
+                }
+              }, TIMEOUT_NOTIFICATION_DISPLAYED, false);
+            }
+          }
+        }
       });
     }
   }
@@ -510,7 +529,6 @@ mciconf.directive('configPicker', function () {
             });
 
             $rootScope.clear();
-
             //START populating $rootScope.builds
             if (config.testrun) {
               $rootScope.testrun.script = config.testrun.script;
@@ -529,7 +547,6 @@ mciconf.directive('configPicker', function () {
               }
               delete config.testrun;
             }
-
 
             for (var platform in config) {
               var versions =[];
@@ -554,19 +571,46 @@ mciconf.directive('configPicker', function () {
               var newEmptyBuild = {};
               newEmptyBuild.firefoxVersions = versions;
               newEmptyBuild.platform = $rootScope.platforms.filter(function(value) {
-                return !value.added && (value.labels.split(" ")[0] === platform.split(" ")[0]);
-              })[0];
-              newEmptyBuild.platformVersion =  newEmptyBuild.platform.versions.filter(notAdded)[0];
-              newEmptyBuild.platformVersion.added = true;
 
-              if (!newEmptyBuild.platform.versions.filter(notAdded).length) {
-                newEmptyBuild.platform.added = true;
+                return !value.added &&
+                       (config[platform]['platform'].indexOf(value.platform) !== -1);
+              })[0];
+
+              if (!newEmptyBuild.platform) {
+                // If no valid platform has been given warn the user
+                var message = 'Platform ' + config[platform]['platform'] +
+                              ' is invalid!';
+                $scope.$emit('notify', {type: 'error', message: message});
               }
+              else {
+                // In case we do have a valid platform, lets check the platform version
+                newEmptyBuild.platformVersion = newEmptyBuild.platform.versions
+                                                 .filter(function (value) {
+                  return platform.indexOf(value.labels) !== -1;
+                })[0];
+                if (!newEmptyBuild.platformVersion) {
+                  // If no valid platform version has been given, warn the user
+                  var message = 'Platform version "' + platform +
+                                '" is not a valid version of "' +
+                                newEmptyBuild.platform.platform + '" platform!';
+                  $scope.$emit('notify', {type: 'error', message: message});
+                }
+                else {
+                  // If we do have both platform and version, set the flags
+                  // so we don't add them again
+                  newEmptyBuild.platformVersion.added = true;
+
+                  if (!newEmptyBuild.platform.versions.filter(notAdded).length) {
+                    newEmptyBuild.platform.added = true;
+                  }
+                }
+              }
+
 
               $rootScope.builds.push(newEmptyBuild);
 
               newEmptyBuild.firefoxVersions.forEach(function (version, index) {
-                if (version.name) {
+                if (version.name && newEmptyBuild.platformVersion) {
                   $rootScope.buildNumberChanged(index, ($rootScope.builds.length - 1));
                 }
               });
