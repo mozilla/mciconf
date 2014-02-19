@@ -14,7 +14,7 @@ mciconf.directive('build', function () {
         var build = {};
         build.exists = STATE.NOT_CHECKED;
         build.name = ($rootScope.firefoxVersions.length) ? $rootScope.firefoxVersions[0] : "";
-        build.type = $rootScope.firefoxVersionsTypes[0];
+        build.type = $rootScope.firefoxReleaseType[build.name];
         build.locale = "";
         build.availableLocales = [];
         $rootScope.builds[aIndex].firefoxVersions.push(build);
@@ -221,18 +221,20 @@ mciconf.directive('build', function () {
        * @param aBuildIndex
        */
       $scope.versionChanged = function (aVersionIndex, aBuildIndex) {
-        var indexOfVersion = $rootScope.firefoxVersions. indexOf($rootScope.builds[aBuildIndex].
-                                                                            firefoxVersions[aVersionIndex].
-                                                                            name);
-        var isRelease = $rootScope.firefoxVersionsTypes[indexOfVersion];
+        $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].buildNumbers = ["final"];
+        var version = $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].name;
+        var releaseType = $rootScope.firefoxReleaseType[version];
 
-        // If the build has a release version we will set it as default in build numbers array
-        $rootScope.builds[aBuildIndex].
-                   firefoxVersions[aVersionIndex].
-                   buildNumbers = (isRelease) ? ['final'] : [];
-        var versionName = $rootScope.builds[aBuildIndex].
-                                 firefoxVersions[aVersionIndex].
-                                 name + "-candidates/";
+        // If the current version is under release directory no build number
+        // checks are necessary
+        if (releaseType === "release") {
+          $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].buildNumber = "final";
+          $scope.buildNumberChanged(aVersionIndex, aBuildIndex);
+
+          return;
+        }
+
+        var versionName = version + "-candidates/";
         var address = "http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/" + versionName;
 
         $rootScope.parseAtAddress(address, 'a', function () {
@@ -536,7 +538,7 @@ mciconf.directive('configPicker', function () {
                   var name = $rootScope.firefoxVersions[$rootScope.firefoxVersions.indexOf(version.split("#")[0])];
                   if (!name)
                     $scope.$emit('notify', {type: 'error',
-                                            message: 'Build ' + version + ' dose not exists'});
+                                            message: 'Build ' + version + ' does not exists'});
 
                   var v = {};
                   v.exists = (!name) ? STATE.NOT_FOUND : STATE.NOT_CHECKED;

@@ -2,7 +2,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $rootScope.builds = [];
   $rootScope.buttonClasses = ["btn-primary", "btn-success", "btn-warning"];
   $rootScope.firefoxVersions = [];
-  $rootScope.firefoxVersionsTypes = [];
+  $rootScope.firefoxReleaseType = {};
   $rootScope.iconClasses = ["icon-question-sign", "icon-ok", "icon-remove"];
   $rootScope.locales = ["en-US"];
   $rootScope.updateChannels = ["releasetest", "betatest", "esrtest", "default", "release", "esr", "beta", "aurora", "nightly"];
@@ -48,42 +48,54 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
     $rootScope.dashboards_url = res.data.dashboards_url;
     $rootScope.dashboard = $rootScope.dashboards[0];
   });
-  $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a', undefined,
+
+  // START Retrieving builds versions from FTP directory and parse data
+  $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a', undefined,
     function (link) {
-      if (link.innerHTML && link.innerHTML.indexOf('-candidates') !== -1) {
-        $rootScope.firefoxVersions.push(link.innerHTML.split('-candidates/')[0]);
+      // Takes a string that starts with a digit until the "/" character
+      var reg = /(^\d+.*?)\//g
+      var result = reg.exec(link.innerHTML);
+      var version = (result && result.length === 2) ? result[1] : undefined;
+
+      // If the version is under release directory we will flag it so by adding
+      // it in firefoxReleaseType object.
+      if (version) {
+        $rootScope.firefoxVersions.push(version);
+        $rootScope.firefoxReleaseType[version] = "release";
       }
     },
     function () {
-      $rootScope.firefoxVersions.sort(function(a,b){
-        return parseInt(b)-parseInt(a);
-      });
-
-      $rootScope.target_build_version = $rootScope.firefoxVersions[0];
-      $rootScope.updateTargetBuildNumber($rootScope.firefoxVersions[0]);
-
-      $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/', 'a', undefined,
+      $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a', undefined,
         function (link) {
-          if (link.innerHTML){
-            var v = link.innerHTML.split('/')[0];
-            if($rootScope.firefoxVersions.indexOf(v) !== -1) {
-              $rootScope.firefoxVersionsTypes[$rootScope.firefoxVersions.indexOf(v)] = 'final';
-            }
+          var reg = /(^\d+.+?)(?=\-candidates\/)/g
+          var result = reg.exec(link.innerHTML);
+          var version = (result && result.length === 2) ? result[1] : undefined;
+
+          // If the current version is under the candidates directory,
+          // we have to check the builds numbers later
+          if (version && $rootScope.firefoxVersions.indexOf(version) !== -1) {
+            $rootScope.firefoxReleaseType[version] = "candidate";
           }
         },
         function () {
+          $rootScope.firefoxVersions.sort(function (a, b) {
+            return parseInt(b) - parseInt(a);
+          });
           $rootScope.builds.forEach(function (build, buildIndex) {
             build.firefoxVersions.forEach(function (version, versionIndex) {
               if (!version.name) {
                 version.name = $rootScope.firefoxVersions[0];
-                version.type = 'final';
-                $rootScope.$emit('versionChanged', {versionIndex: versionIndex,
-                  buildIndex: buildIndex});
+                version.type = $rootScope.firefoxReleaseType[version.name];
+                $rootScope.$emit('versionChanged',
+                  {versionIndex: versionIndex, buildIndex: buildIndex});
               }
             });
           });
+          $rootScope.target_build_version = $rootScope.firefoxVersions[0];
+          $rootScope.updateTargetBuildNumber($rootScope.firefoxVersions[0]);
         });
     });
+  // END Retrieving build versions
 
   $http.get('https://l10n.mozilla.org/shipping/api/status?tree=fx_beta').then(function (res){
     res.data.items.forEach(function (locale) {
@@ -111,7 +123,7 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
     var version = {};
     version.exists = STATE.NOT_CHECKED;
     version.name = ($rootScope.firefoxVersions.length) ? $rootScope.firefoxVersions[0] : "";
-    version.type = $rootScope.firefoxVersionsTypes[0];
+    version.type = $rootScope.firefoxReleaseType[version.name];
     version.locale = "";
     version.availableLocales = [];
 
