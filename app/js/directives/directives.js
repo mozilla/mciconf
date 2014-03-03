@@ -431,7 +431,7 @@ mciconf.directive('dropDownCheckBox', function () {
         } else {
           var locales = $rootScope.builds[aBuildIndex].
                         firefoxVersions[aVersionIndex].locale.split(" ");
-          locales.pop(locale);
+          locales.splice(locales.indexOf(locale), 1);
           $rootScope.builds[aBuildIndex].
                      firefoxVersions[aVersionIndex].locale = locales.join(" ");
         }
