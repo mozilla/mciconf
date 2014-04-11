@@ -58,6 +58,8 @@ mciconf.directive('build', function () {
           $scope.unCheck(aVersionIndex, aBuildIndex);
         }, function (link) {
           if (link.href && link.href.indexOf(link.innerHTML) !== -1) {
+            if (link.innerHTML === "xpi/")
+              return;
             var locale = $rootScope.builds[aBuildIndex].firefoxVersions[aVersionIndex].locale;
             $rootScope.builds[aBuildIndex].
                        firefoxVersions[aVersionIndex].
