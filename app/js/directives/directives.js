@@ -620,3 +620,14 @@ mciconf.directive('channel', function () {
     }
   }
 });
+mciconf.directive('overrideUpdateChannel', function () {
+
+  return {
+    restrict: 'AE',
+    templateUrl: 'templates/override-update-channel.html',
+    controller: function ($rootScope) {
+      $rootScope.overrideUpdateChannel = "None";
+      $rootScope.overrideUpdateChannelOptions = ["None", "firefox-mozilla-beta"];
+    }
+  }
+});

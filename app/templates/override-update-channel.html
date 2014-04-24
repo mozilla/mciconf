@@ -1,0 +1,12 @@
+<div class="control-group ng-hide"
+     ng-show="isUpdate();">
+  <label class="control-label" for="inputOverrideUpdateChannel">Override Accepted Mar Channel</label>
+  <div class="controls">
+    <select id="inputOverrideUpdateChannel"
+           type="text"
+           class="input-medium"
+           ng-model="$parent.overrideUpdateChannel"
+           ng-options="option  for option in overrideUpdateChannelOptions">
+    </select>
+  </div>
+</div>
