@@ -55,25 +55,32 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
       // Takes a string that starts with a digit until the "/" character
       var reg = /(^\d+.*?)\//g
       var result = reg.exec(link.innerHTML);
-      var version = (result && result.length === 2) ? result[1] : undefined;
 
-      // If the version is under release directory we will flag it so by adding
-      // it in firefoxReleaseType object.
-      if (version) {
-        $rootScope.firefoxVersions.push(version);
-        $rootScope.firefoxReleaseType[version] = "release";
-      }
+      // Return if the entry is not a valid version identifier
+      if (!result || result.length < 2)
+        return;
+
+      var version = result[1];
+
+      // A release build has been found and has to be added
+      $rootScope.firefoxVersions.push(version);
+      $rootScope.firefoxReleaseType[version] = "release";
     },
     function () {
       $rootScope.parseAtAddress('http://ftp.mozilla.org/pub/mozilla.org/firefox/candidates/', 'a', undefined,
         function (link) {
           var reg = /(^\d+.+?)(?=\-candidates\/)/g
           var result = reg.exec(link.innerHTML);
-          var version = (result && result.length === 2) ? result[1] : undefined;
 
-          // If the current version is under the candidates directory,
-          // we have to check the builds numbers later
-          if (version && $rootScope.firefoxVersions.indexOf(version) !== -1) {
+          // Return if the entry is not a valid version identifier
+          if (!result || result.length < 2)
+            return;
+
+          var version = result[1];
+
+          // Only add the found build if it hasn't already been found under releases
+          if ($rootScope.firefoxVersions.indexOf(version) === -1) {
+            $rootScope.firefoxVersions.push(version);
             $rootScope.firefoxReleaseType[version] = "candidate";
           }
         },
