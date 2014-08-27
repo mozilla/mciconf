@@ -73,7 +73,8 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
 
           // If the current version is under the candidates directory,
           // we have to check the builds numbers later
-          if (version && $rootScope.firefoxVersions.indexOf(version) !== -1) {
+          if (version) {
+            $rootScope.firefoxVersions.push(version);
             $rootScope.firefoxReleaseType[version] = "candidate";
           }
         },
