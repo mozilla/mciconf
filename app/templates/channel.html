@@ -1,9 +1,11 @@
 <div class="control-group ng-hide"
-     ng-show="isUpdate();">
+     ng-show="isUpdate();"
+     title="You can edit the channel manually if you don't find the desired one in the list">
   <label class="control-label" for="inputUpdateChannel">Update Channel</label>
   <div class="controls">
     <input type="text"
-           ng-model="$parent.updateChannel">
+           ng-model="$parent.updateChannel"
+           placeholder="Select or enter channel name">
     <select id="inputUpdateChannel"
            type="text"
            class="input-medium"

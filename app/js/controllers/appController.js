@@ -5,8 +5,8 @@ mciconf.controller('mainController', ['$scope', '$rootScope', '$http', '$timeout
   $rootScope.firefoxReleaseType = {};
   $rootScope.iconClasses = ["icon-question-sign", "icon-ok", "icon-remove"];
   $rootScope.locales = ["en-US"];
-  $rootScope.updateChannels = ["releasetest", "betatest", "esrtest", "default", "release", "esr", "beta", "aurora", "nightly"];
-  $rootScope.updateChannel = "default";
+  $rootScope.updateChannels = ["aurora", "auroratest", "beta", "beta-cdntest", "beta-localtest", "betatest", "esr", "esrtest", "nightly", "nightly-esr31", "release", "releasetest"];
+  $rootScope.updateChannel = "";
   $rootScope.target_build_id = "..."
   $rootScope.target_build_version = "";
   $rootScope.target_build_number = "build1";
