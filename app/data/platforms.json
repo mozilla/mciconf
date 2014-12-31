@@ -6,12 +6,10 @@
     {"name": "10.9", "labels": "10.9 64bit", "added": false}
   ]},
   {"name": "Ubuntu", "labels": "linux ubuntu", "platform": "linux", "added": false, "versions":[
-    {"name": "12.04 (32bit)", "labels": "12.04 32bit", "added": false},
-    {"name": "12.04 (64bit)", "labels": "12.04 64bit", "platform": "linux64", "added": false},
-    {"name": "13.10 (32bit)", "labels": "13.10 32bit", "added": false},
-    {"name": "13.10 (64bit)", "labels": "13.10 64bit", "platform": "linux64", "added": false},
     {"name": "14.04 (32bit)", "labels": "14.04 32bit", "added": false},
-    {"name": "14.04 (64bit)", "labels": "14.04 64bit", "platform": "linux64", "added": false}
+    {"name": "14.04 (64bit)", "labels": "14.04 64bit", "platform": "linux64", "added": false},
+    {"name": "14.10 (32bit)", "labels": "14.10 32bit", "added": false},
+    {"name": "14.10 (64bit)", "labels": "14.10 64bit", "platform": "linux64", "added": false}
   ]},
   {"name": "Windows", "labels": "windows", "platform": "win32", "added": false, "versions":[
     {"name": "XP", "labels": "xp 32bit", "added": false},
